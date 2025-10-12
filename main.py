@@ -850,8 +850,182 @@ def patient_profile_page():
 #         ❌ Alcohol
 #         ❌ High-sodium foods
 #         """)
+# def smart_meal_planner_page():
+#     """Smart Meal Planner with Image Upload - FIXED"""
+#     st.markdown("## 🍽️ Smart Meal Planner")
+#     st.markdown("*AI-powered meal analysis for fatty liver disease management*")
+    
+#     col1, col2 = st.columns([2, 1])
+    
+#     with col1:
+#         with st.form("meal_analysis_form"):
+#             st.markdown("### 📋 Meal Input")
+            
+#             input_method = st.radio("Choose input method:", ["📝 Text Description", "📷 Upload Photo", "📝+📷 Both"])
+            
+#             meal_description = ""
+#             uploaded_image = None
+            
+#             if input_method in ["📝 Text Description", "📝+📷 Both"]:
+#                 meal_description = st.text_area(
+#                     "🍽️ Describe your meal",
+#                     placeholder="E.g., Grilled chicken breast (150g), steamed broccoli (1 cup), brown rice (1/2 cup), olive oil (1 tsp)",
+#                     height=100
+#                 )
+            
+#             if input_method in ["📷 Upload Photo", "📝+📷 Both"]:
+#                 uploaded_image = st.file_uploader("📷 Upload meal photo", type=["jpg", "jpeg", "png"])
+            
+#             col_a, col_b = st.columns(2)
+#             with col_a:
+#                 meal_type = st.selectbox("🍴 Meal Type", 
+#                     ["Breakfast", "Morning Snack", "Lunch", "Afternoon Snack", "Dinner", "Evening Snack"])
+#             with col_b:
+#                 portion_size = st.select_slider("🍽️ Portion Size",
+#                     options=["Small", "Medium", "Large", "Extra Large"])
+            
+#             preferences = st.text_input("🎯 Dietary Preferences/Restrictions", 
+#                 placeholder="E.g., vegetarian, low-sodium, no dairy")
+            
+#             submitted = st.form_submit_button("📬 Analyze Meal", use_container_width=True, type="primary")
+            
+#             if submitted:
+#                 # VALIDATION: Check if user provided input
+#                 if not meal_description and not uploaded_image:
+#                     st.error("❌ Please provide either a meal description or upload a photo")
+#                     return
+                
+#                 with st.spinner("🧬 Analyzing meal for fatty liver suitability..."):
+#                     progress = st.progress(0)
+#                     for i in range(100):
+#                         time.sleep(0.01)
+#                         progress.progress(i + 1)
+                    
+#                     # BUILD PROMPT FROM ACTUAL USER INPUTS (NOT DEFAULTS)
+#                     analysis_context = f"""
+# Analyze this meal for a patient with fatty liver disease. Focus on:
+# 1. Identify all food items and portion sizes
+# 2. Calculate nutritional composition (calories, macros, key nutrients)
+# 3. Assess suitability for fatty liver disease (rate as Excellent/Good/Fair/Poor)
+# 4. Identify foods to avoid or limit for liver health
+# 5. Provide specific recommendations for improvement
+# 6. Suggest healthier alternatives if needed
+
+# **ACTUAL USER INPUT:**
+# Meal Type: {meal_type}
+# Portion: {portion_size}
+# Preferences: {preferences if preferences else 'None specified'}
+# Description: {meal_description if meal_description else 'Image analysis only'}
+# """
+                    
+#                     if ai and ai.enabled:
+#                         # Analyze image if uploaded
+#                         image_analysis = ""
+#                         if uploaded_image:
+#                             image_bytes = uploaded_image.getvalue()
+#                             image_prompt = f"{analysis_context}\n\nAnalyze the food items visible in this image."
+#                             image_analysis = ai.analyze_image(image_bytes, image_prompt)
+                        
+#                         # Combine text and image analysis
+#                         full_prompt = analysis_context
+#                         if meal_description:
+#                             full_prompt += f"\n\n**Text Description:** {meal_description}"
+#                         if image_analysis:
+#                             full_prompt += f"\n\n**Image Analysis Results:** {image_analysis}"
+                        
+#                         messages = [
+#                             {"role": "system", "content": "You are a specialized nutritionist for fatty liver disease patients. Provide detailed, actionable advice focused on liver health. Base recommendations on AASLD (American Association for Study of Liver Diseases) guidelines for NAFLD/NASH management."},
+#                             {"role": "user", "content": full_prompt}
+#                         ]
+#                         analysis = ai.chat_completion(messages, temperature=0.3, max_tokens=1200)
+#                     else:
+#                         # Demo mode with user inputs reflected
+#                         analysis = f"""### 📬 Nutritional Analysis for Fatty Liver Disease
+
+# **YOUR INPUT:**
+# - Meal Type: {meal_type}
+# - Portion Size: {portion_size}
+# - Preferences: {preferences if preferences else 'None specified'}
+# - Description: {meal_description if meal_description else 'Photo uploaded for analysis'}
+
+# ---
+
+# **Food Items Identified:**
+# Based on your description: {meal_description if meal_description else '[Image analysis would be performed with OpenAI API key]'}
+
+# **Nutritional Composition:**
+# [Detailed breakdown would appear here with real API]
+
+# **Liver Health Suitability:** Assessment based on your input
+
+# **Recommendations:**
+# 1. Continue with healthy choices
+# 2. Monitor portion sizes
+# 3. Stay hydrated
+
+# *📝 Add OpenAI API key for detailed AI-powered analysis with image recognition!*"""
+                    
+
+                    
+#                     meal_data = {
+#                         "date": datetime.now().isoformat(),
+#                         "meal_type": meal_type,
+#                         "portion": portion_size,
+#                         "description": meal_description,
+#                         "preferences": preferences,
+#                         "has_image": uploaded_image is not None,
+#                         "analysis": analysis,
+#                         "timestamp": datetime.now().isoformat()
+#                     }
+                    
+#                     st.session_state.meal_plans.insert(0, meal_data)
+#                     st.session_state.nutrition_logs.insert(0, meal_data)
+                    
+#                     if HELPERS_AVAILABLE:
+#                         db = init_firebase()
+#                         db.save_meal_analysis(st.session_state.user_id, meal_data)
+                    
+#                     st.success("✅ Meal analyzed successfully!")
+#                     st.markdown(analysis)
+#                     st.balloons()
+    
+#     with col2:
+#         st.markdown("### 📚 Recent Analyses")
+        
+#         if st.session_state.meal_plans:
+#             for i, meal in enumerate(st.session_state.meal_plans[:5]):
+#                 date_str = datetime.fromisoformat(meal['date']).strftime('%b %d, %Y')
+#                 with st.expander(f"🍽️ {meal['meal_type']} - {date_str}", expanded=(i==0)):
+#                     if meal.get('description'):
+#                         st.markdown(f"**Your Description:** {meal['description']}")
+#                     st.markdown(f"**Portion:** {meal['portion']}")
+#                     if meal.get('preferences'):
+#                         st.markdown(f"**Preferences:** {meal['preferences']}")
+#                     st.markdown("---")
+#                     st.markdown(meal['analysis'][:300] + "..." if len(meal['analysis']) > 300 else meal['analysis'])
+#         else:
+#             st.info("🍽️ No meal analyses yet. Start by analyzing your first meal!")
+        
+#         st.markdown("### 💡 Liver-Friendly Tips")
+#         st.info("""
+#         **Foods to Favor:**
+#         ✅ Leafy greens
+#         ✅ Fatty fish (salmon, sardines)
+#         ✅ Nuts (walnuts, almonds)
+#         ✅ Olive oil
+#         ✅ Green tea
+#         ✅ Whole grains
+        
+#         **Foods to Limit:**
+#         ❌ Fried foods
+#         ❌ Processed meats
+#         ❌ Added sugars
+#         ❌ White bread/pasta
+#         ❌ Alcohol
+#         ❌ High-sodium foods
+#         """)
 def smart_meal_planner_page():
-    """Smart Meal Planner with Image Upload - FIXED"""
+    """Smart Meal Planner with Image Upload - Enhanced for Gemini AI"""
     st.markdown("## 🍽️ Smart Meal Planner")
     st.markdown("*AI-powered meal analysis for fatty liver disease management*")
     
@@ -862,7 +1036,6 @@ def smart_meal_planner_page():
             st.markdown("### 📋 Meal Input")
             
             input_method = st.radio("Choose input method:", ["📝 Text Description", "📷 Upload Photo", "📝+📷 Both"])
-            
             meal_description = ""
             uploaded_image = None
             
@@ -890,7 +1063,7 @@ def smart_meal_planner_page():
             submitted = st.form_submit_button("📬 Analyze Meal", use_container_width=True, type="primary")
             
             if submitted:
-                # VALIDATION: Check if user provided input
+                # Validation
                 if not meal_description and not uploaded_image:
                     st.error("❌ Please provide either a meal description or upload a photo")
                     return
@@ -901,21 +1074,30 @@ def smart_meal_planner_page():
                         time.sleep(0.01)
                         progress.progress(i + 1)
                     
-                    # BUILD PROMPT FROM ACTUAL USER INPUTS (NOT DEFAULTS)
+                    # Enhanced prompt for detailed, quantitative response
                     analysis_context = f"""
-Analyze this meal for a patient with fatty liver disease. Focus on:
-1. Identify all food items and portion sizes
-2. Calculate nutritional composition (calories, macros, key nutrients)
-3. Assess suitability for fatty liver disease (rate as Excellent/Good/Fair/Poor)
-4. Identify foods to avoid or limit for liver health
-5. Provide specific recommendations for improvement
-6. Suggest healthier alternatives if needed
+You are an expert hepatology dietitian helping a patient with fatty liver disease.
 
-**ACTUAL USER INPUT:**
-Meal Type: {meal_type}
-Portion: {portion_size}
-Preferences: {preferences if preferences else 'None specified'}
-Description: {meal_description if meal_description else 'Image analysis only'}
+Analyze the following meal comprehensively. Focus on:
+1. Identify food items and portion sizes
+2. Estimate total calories and macronutrients (protein, carbs, fats)
+3. Evaluate meal suitability for fatty liver disease
+4. Detect foods that are beneficial or harmful to liver health
+5. Suggest specific replacements or improvements
+6. Provide personalized tips based on dietary preferences or restrictions
+7. Give a **quantitative evaluation**:
+   - Liver Health Suitability Score (0–100)
+   - Verdict: Excellent / Good / Fair / Poor
+   - Table of macronutrient breakdown
+   - 2–3 key takeaways for better liver health
+
+Format your response clearly with headings and bullet points.
+
+**PATIENT INPUT:**
+- Meal Type: {meal_type}
+- Portion Size: {portion_size}
+- Preferences: {preferences if preferences else 'None specified'}
+- Description: {meal_description if meal_description else 'Image uploaded for analysis'}
 """
                     
                     if ai and ai.enabled:
@@ -923,10 +1105,10 @@ Description: {meal_description if meal_description else 'Image analysis only'}
                         image_analysis = ""
                         if uploaded_image:
                             image_bytes = uploaded_image.getvalue()
-                            image_prompt = f"{analysis_context}\n\nAnalyze the food items visible in this image."
+                            image_prompt = f"{analysis_context}\n\nAnalyze visible foods in this image."
                             image_analysis = ai.analyze_image(image_bytes, image_prompt)
                         
-                        # Combine text and image analysis
+                        # Combine text + image analysis
                         full_prompt = analysis_context
                         if meal_description:
                             full_prompt += f"\n\n**Text Description:** {meal_description}"
@@ -934,12 +1116,22 @@ Description: {meal_description if meal_description else 'Image analysis only'}
                             full_prompt += f"\n\n**Image Analysis Results:** {image_analysis}"
                         
                         messages = [
-                            {"role": "system", "content": "You are a specialized nutritionist for fatty liver disease patients. Provide detailed, actionable advice focused on liver health. Base recommendations on AASLD (American Association for Study of Liver Diseases) guidelines for NAFLD/NASH management."},
+                            {
+                                "role": "system",
+                                "content": (
+                                    "You are an expert hepatology dietitian specializing in non-alcoholic fatty liver disease. "
+                                    "Always return a clear quantitative liver suitability score (0–100), verdict, and practical advice. "
+                                    "Follow AASLD guidelines and ensure tone is supportive, educational, and actionable."
+                                ),
+                            },
                             {"role": "user", "content": full_prompt}
                         ]
-                        analysis = ai.chat_completion(messages, temperature=0.3, max_tokens=1200)
+                        
+                        # Gemini chat call (replace ai.chat_completion if using Gemini’s method)
+                        analysis = ai.chat_completion(messages, temperature=0.3, max_tokens=1500)
+                    
                     else:
-                        # Demo mode with user inputs reflected
+                        # Demo fallback mode
                         analysis = f"""### 📬 Nutritional Analysis for Fatty Liver Disease
 
 **YOUR INPUT:**
@@ -951,22 +1143,25 @@ Description: {meal_description if meal_description else 'Image analysis only'}
 ---
 
 **Food Items Identified:**
-Based on your description: {meal_description if meal_description else '[Image analysis would be performed with OpenAI API key]'}
+{meal_description if meal_description else '[Image analysis would be performed with API]'}
 
-**Nutritional Composition:**
-[Detailed breakdown would appear here with real API]
+**Liver Health Suitability Score:** [Simulated: 70/100 – Fair]
+**Verdict:** Moderate — needs improvement
 
-**Liver Health Suitability:** Assessment based on your input
+**Nutritional Composition (approx.):**
+Calories: ~450 kcal  
+Protein: 25g | Carbs: 40g | Fat: 15g  
 
-**Recommendations:**
-1. Continue with healthy choices
-2. Monitor portion sizes
-3. Stay hydrated
+**Liver-Friendly Recommendations:**
+1. Reduce fried or oily foods.
+2. Increase fiber-rich vegetables.
+3. Avoid sugary sauces or refined carbs.
+4. Stay hydrated and avoid alcohol.
 
-*📝 Add OpenAI API key for detailed AI-powered analysis with image recognition!*"""
+*(Add your API key for full Gemini-powered analysis with image recognition and detailed scoring.)*
+"""
                     
-
-                    
+                    # Save meal data
                     meal_data = {
                         "date": datetime.now().isoformat(),
                         "meal_type": meal_type,
@@ -989,6 +1184,7 @@ Based on your description: {meal_description if meal_description else '[Image an
                     st.markdown(analysis)
                     st.balloons()
     
+    # Right panel
     with col2:
         st.markdown("### 📚 Recent Analyses")
         
@@ -1009,20 +1205,20 @@ Based on your description: {meal_description if meal_description else '[Image an
         st.markdown("### 💡 Liver-Friendly Tips")
         st.info("""
         **Foods to Favor:**
-        ✅ Leafy greens
-        ✅ Fatty fish (salmon, sardines)
-        ✅ Nuts (walnuts, almonds)
-        ✅ Olive oil
-        ✅ Green tea
-        ✅ Whole grains
-        
+        ✅ Leafy greens  
+        ✅ Fatty fish (salmon, sardines)  
+        ✅ Nuts (walnuts, almonds)  
+        ✅ Olive oil  
+        ✅ Green tea  
+        ✅ Whole grains  
+
         **Foods to Limit:**
-        ❌ Fried foods
-        ❌ Processed meats
-        ❌ Added sugars
-        ❌ White bread/pasta
-        ❌ Alcohol
-        ❌ High-sodium foods
+        ❌ Fried foods  
+        ❌ Processed meats  
+        ❌ Added sugars  
+        ❌ White bread/pasta  
+        ❌ Alcohol  
+        ❌ High-sodium foods  
         """)
 
 def nutrition_tracker_dashboard():

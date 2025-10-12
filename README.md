@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🫀 Liver Buddy
 
 ### AI-Powered Companion for Fatty Liver Disease Management
@@ -583,3 +584,7 @@ If you find Liver Buddy helpful, please consider giving it a star! ⭐
 **Version**: 1.0.0  
 **Last Updated**: January 2025  
 **Status**: Active Development 🚀
+=======
+# fatty-liver-disease-solution
+AI Powered Solution For Fatty Liver Disease Prevention
+>>>>>>> f26de493ed9e402f4dfb773fc47fef067f1f36fb
