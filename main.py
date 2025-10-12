@@ -1857,7 +1857,7 @@ IMPORTANT: Keep intensity moderate (50-70% max heart rate). Exercise is crucial 
             
                     # if "CAUTION" in validation["status"]:
                     #     st.warning("⚠️ Review the warnings above before starting this workout")
-                    # st.session_state.workout_plans.insert(0, plan_data)
+                    st.session_state.workout_plans.insert(0, plan_data)
                     
                     if HELPERS_AVAILABLE:
                         db = init_firebase()
