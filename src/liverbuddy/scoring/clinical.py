@@ -181,7 +181,7 @@ def cardiometabolic_criteria(m: PatientMeasures) -> CardiometabolicCriteria:
         return False if any(v is False for v in vals) else None
 
     bmi_cut = 23 if m.asian_ethnicity else 25
-    waist_cut = {"male": 90 if m.asian_ethnicity else 94, "female": 80}.get(m.sex or "", None)
+    waist_cut = {"male": 90 if m.asian_ethnicity else 94, "female": 80}.get(m.sex or "")
     c1 = any_known(None if m.bmi is None else m.bmi >= bmi_cut,
                    None if (m.waist_cm is None or waist_cut is None) else m.waist_cm > waist_cut)
     c2 = any_known(m.type2_diabetes or None,
@@ -192,7 +192,7 @@ def cardiometabolic_criteria(m: PatientMeasures) -> CardiometabolicCriteria:
                    None if m.diastolic_bp is None else m.diastolic_bp >= 85)
     c4 = any_known(m.on_lipid_lowering or None,
                    None if m.triglycerides is None else m.triglycerides >= 150)
-    hdl_cut = {"male": 40, "female": 50}.get(m.sex or "", None)
+    hdl_cut = {"male": 40, "female": 50}.get(m.sex or "")
     c5 = any_known(m.on_lipid_lowering or None,
                    None if (m.hdl is None or hdl_cut is None) else m.hdl <= hdl_cut)
     met = sum(c is True for c in (c1, c2, c3, c4, c5))

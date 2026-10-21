@@ -5,8 +5,25 @@ from __future__ import annotations
 from datetime import UTC, date, datetime
 from functools import lru_cache
 
-from sqlalchemy import JSON, Date, DateTime, Float, ForeignKey, Integer, String, create_engine, select
-from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship, sessionmaker
+from sqlalchemy import (
+    JSON,
+    Date,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    create_engine,
+    select,
+)
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    Session,
+    mapped_column,
+    relationship,
+    sessionmaker,
+)
 
 from liverbuddy.scoring.clinical import PatientMeasures
 

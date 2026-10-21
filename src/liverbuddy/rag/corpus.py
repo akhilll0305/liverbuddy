@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import re
-
 from collections.abc import Iterable, Iterator
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -57,7 +56,7 @@ def _split_long(text: str, limit: int = MAX_CHARS) -> Iterator[str]:
         yield text
         return
     # rows/lines first, then bullets, then sentences; recurse until every piece fits
-    for pattern, sep in ((r"\n", "\n"), (r"\s*•\s*", "\n• "), (r"(?<=[.!?\]])\s+", " ")):
+    for pattern, sep in ((r"\n", "\n"), (r"\s*•\s*", "\n• "), (r"(?<=[.!?\]])\s+", " ")):  # noqa: B007 - sep is used after the loop
         pieces = [p for p in re.split(pattern, text) if p.strip()]
         if len(pieces) > 1:
             break

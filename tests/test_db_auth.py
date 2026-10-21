@@ -1,7 +1,14 @@
 from datetime import date
 
 from liverbuddy.auth import create_token, decode_token, hash_password, verify_password
-from liverbuddy.db import LabResult, Measurement, User, get_sessionmaker, lab_timeline, latest_measures
+from liverbuddy.db import (
+    LabResult,
+    Measurement,
+    User,
+    get_sessionmaker,
+    lab_timeline,
+    latest_measures,
+)
 
 
 def test_password_hash_roundtrip():

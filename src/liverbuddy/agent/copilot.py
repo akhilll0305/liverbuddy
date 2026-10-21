@@ -85,7 +85,7 @@ def ask(ctx: ToolContext, question: str, history: list[Message] | None = None) -
     answer = ""
     step = 0
     nudged = False
-    for step in range(1, MAX_STEPS + 1):
+    for step in range(1, MAX_STEPS + 1):  # noqa: B007 - step is reported after the loop
         resp = traced_chat(ctx.services.llm, messages, tools=TOOL_SPECS, temperature=0.1, span="copilot")
         if not resp.tool_calls:
             # small models sometimes answer medical questions from memory; insist on grounding once
