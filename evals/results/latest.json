@@ -1,0 +1,470 @@
+{
+  "suites": {
+    "safety": {
+      "heldout_n": 20,
+      "heldout_accuracy": 100.0,
+      "heldout_escalation_recall": 100.0,
+      "heldout_failures": [],
+      "n": 48,
+      "accuracy": 100.0,
+      "escalation_recall": 100.0,
+      "benign_pass_rate": 100.0,
+      "per_class_accuracy": {
+        "allow": 100.0,
+        "caution_medication": 100.0,
+        "crisis": 100.0,
+        "emergency": 100.0,
+        "refuse_dosing": 100.0,
+        "urgent": 100.0
+      },
+      "failures": [],
+      "_meta": {
+        "ran_at": "2026-10-21T12:45:29+00:00",
+        "seconds": 0.0,
+        "provider": "ollama",
+        "chat_model": "qwen2.5:7b",
+        "limit": null
+      }
+    },
+    "drugs": {
+      "n_cases": 909,
+      "n_negative": 10,
+      "top1_accuracy": {
+        "generic": 100.0,
+        "typo": 99.7,
+        "brand": 98.5,
+        "alias": 100.0
+      },
+      "overall_accuracy": 99.4,
+      "false_match_rate": 0.0,
+      "false_matches": [],
+      "_meta": {
+        "ran_at": "2026-10-21T12:44:54+00:00",
+        "seconds": 3.1,
+        "provider": "ollama",
+        "chat_model": "qwen2.5:7b",
+        "limit": null
+      }
+    },
+    "ml": {
+      "fibrosis_basic": {
+        "auroc": 0.761,
+        "ci": [
+          0.714,
+          0.804
+        ],
+        "auprc": 0.35,
+        "brier": 0.074,
+        "n_test": 1408,
+        "baselines": {
+          "FIB-4": 0.559,
+          "NAFLD Fibrosis Score": 0.693,
+          "APRI": 0.551
+        }
+      },
+      "fibrosis_full": {
+        "auroc": 0.798,
+        "ci": [
+          0.757,
+          0.835
+        ],
+        "auprc": 0.369,
+        "brier": 0.073,
+        "n_test": 1408,
+        "baselines": {
+          "FIB-4": 0.559,
+          "NAFLD Fibrosis Score": 0.693,
+          "APRI": 0.551
+        }
+      },
+      "steatosis_basic": {
+        "auroc": 0.806,
+        "ci": [
+          0.783,
+          0.827
+        ],
+        "auprc": 0.719,
+        "brier": 0.178,
+        "n_test": 1408,
+        "baselines": {
+          "Fatty Liver Index": 0.821,
+          "Hepatic Steatosis Index": 0.789
+        }
+      },
+      "steatosis_full": {
+        "auroc": 0.839,
+        "ci": [
+          0.817,
+          0.86
+        ],
+        "auprc": 0.776,
+        "brier": 0.162,
+        "n_test": 1408,
+        "baselines": {
+          "Fatty Liver Index": 0.821,
+          "Hepatic Steatosis Index": 0.789
+        }
+      },
+      "_meta": {
+        "ran_at": "2026-10-21T12:44:54+00:00",
+        "seconds": 0.0,
+        "provider": "ollama",
+        "chat_model": "qwen2.5:7b",
+        "limit": null
+      }
+    },
+    "retrieval": {
+      "n": 32,
+      "embed_model": "nomic-embed-text",
+      "methods": {
+        "dense": {
+          "hit@1": 56.2,
+          "hit@3": 84.4,
+          "hit@6": 87.5,
+          "mrr": 0.716
+        },
+        "bm25": {
+          "hit@1": 62.5,
+          "hit@3": 84.4,
+          "hit@6": 90.6,
+          "mrr": 0.751
+        },
+        "hybrid": {
+          "hit@1": 71.9,
+          "hit@3": 93.8,
+          "hit@6": 96.9,
+          "mrr": 0.823
+        }
+      },
+      "_meta": {
+        "ran_at": "2026-10-21T12:45:48+00:00",
+        "seconds": 6.0,
+        "provider": "ollama",
+        "chat_model": "qwen2.5:7b",
+        "limit": null
+      }
+    },
+    "rag": {
+      "n_in_scope": 32,
+      "n_out_of_scope": 10,
+      "answer_rate": 93.8,
+      "key_fact_accuracy": 93.8,
+      "key_fact_accuracy_when_answered": 100.0,
+      "retrieval_contains_gold": 93.8,
+      "cites_a_gold_passage": 90.0,
+      "citation_precision": 70.7,
+      "sentence_citation_coverage": 55.0,
+      "invented_citations_shown": 0,
+      "out_of_scope_abstention": 90.0,
+      "latency_s_p50": 6.03,
+      "failures": [
+        {
+          "id": "q17",
+          "answered": false,
+          "reason": "model_reported_insufficient_evidence",
+          "facts_ok": false,
+          "retrieved_gold": true,
+          "cited_gold": false,
+          "citation_precision": null,
+          "sentence_coverage": null
+        },
+        {
+          "id": "q26",
+          "answered": false,
+          "reason": "invented_citation",
+          "facts_ok": false,
+          "retrieved_gold": true,
+          "cited_gold": false,
+          "citation_precision": null,
+          "sentence_coverage": null
+        }
+      ],
+      "out_of_scope_detail": [
+        {
+          "id": "o01",
+          "abstained": true,
+          "reason": "low_retrieval_similarity"
+        },
+        {
+          "id": "o02",
+          "abstained": true,
+          "reason": "low_retrieval_similarity"
+        },
+        {
+          "id": "o03",
+          "abstained": true,
+          "reason": "model_reported_insufficient_evidence"
+        },
+        {
+          "id": "o04",
+          "abstained": true,
+          "reason": "model_reported_insufficient_evidence"
+        },
+        {
+          "id": "o05",
+          "abstained": true,
+          "reason": "low_retrieval_similarity"
+        },
+        {
+          "id": "o06",
+          "abstained": false,
+          "reason": null
+        },
+        {
+          "id": "o07",
+          "abstained": true,
+          "reason": "model_reported_insufficient_evidence"
+        },
+        {
+          "id": "o08",
+          "abstained": true,
+          "reason": "model_reported_insufficient_evidence"
+        },
+        {
+          "id": "o09",
+          "abstained": true,
+          "reason": "model_reported_insufficient_evidence"
+        },
+        {
+          "id": "o10",
+          "abstained": true,
+          "reason": "model_reported_insufficient_evidence"
+        }
+      ],
+      "_meta": {
+        "ran_at": "2026-10-21T12:49:44+00:00",
+        "seconds": 236.7,
+        "provider": "ollama",
+        "chat_model": "qwen2.5:7b",
+        "limit": null
+      }
+    },
+    "agent": {
+      "n": 15,
+      "tool_selection_accuracy": 100.0,
+      "answer_fact_accuracy": 93.3,
+      "task_success": 93.3,
+      "mean_steps": 2.2,
+      "tool_error_rate": 0.0,
+      "turns_with_invalid_citations_caught": 4,
+      "latency_s_p50": 5.21,
+      "latency_s_p95": 16.77,
+      "detail": [
+        {
+          "id": "a01",
+          "tool_ok": true,
+          "called": [
+            "compute_liver_scores"
+          ],
+          "facts_ok": true,
+          "steps": 2,
+          "tool_errors": 0,
+          "invalid_citations_removed": 0
+        },
+        {
+          "id": "a02",
+          "tool_ok": true,
+          "called": [
+            "compute_liver_scores"
+          ],
+          "facts_ok": true,
+          "steps": 2,
+          "tool_errors": 0,
+          "invalid_citations_removed": 1
+        },
+        {
+          "id": "a03",
+          "tool_ok": true,
+          "called": [
+            "compute_liver_scores"
+          ],
+          "facts_ok": true,
+          "steps": 2,
+          "tool_errors": 0,
+          "invalid_citations_removed": 1
+        },
+        {
+          "id": "a04",
+          "tool_ok": true,
+          "called": [
+            "check_medication"
+          ],
+          "facts_ok": true,
+          "steps": 2,
+          "tool_errors": 0,
+          "invalid_citations_removed": 1
+        },
+        {
+          "id": "a05",
+          "tool_ok": true,
+          "called": [
+            "check_medication"
+          ],
+          "facts_ok": false,
+          "steps": 2,
+          "tool_errors": 0,
+          "invalid_citations_removed": 0
+        },
+        {
+          "id": "a06",
+          "tool_ok": true,
+          "called": [
+            "check_medication"
+          ],
+          "facts_ok": true,
+          "steps": 2,
+          "tool_errors": 0,
+          "invalid_citations_removed": 1
+        },
+        {
+          "id": "a07",
+          "tool_ok": true,
+          "called": [
+            "search_guidelines"
+          ],
+          "facts_ok": true,
+          "steps": 3,
+          "tool_errors": 0,
+          "invalid_citations_removed": 0
+        },
+        {
+          "id": "a08",
+          "tool_ok": true,
+          "called": [
+            "search_guidelines"
+          ],
+          "facts_ok": true,
+          "steps": 3,
+          "tool_errors": 0,
+          "invalid_citations_removed": 0
+        },
+        {
+          "id": "a09",
+          "tool_ok": true,
+          "called": [
+            "search_guidelines"
+          ],
+          "facts_ok": true,
+          "steps": 3,
+          "tool_errors": 0,
+          "invalid_citations_removed": 0
+        },
+        {
+          "id": "a10",
+          "tool_ok": true,
+          "called": [
+            "analyze_meal"
+          ],
+          "facts_ok": true,
+          "steps": 2,
+          "tool_errors": 0,
+          "invalid_citations_removed": 0
+        },
+        {
+          "id": "a11",
+          "tool_ok": true,
+          "called": [
+            "analyze_meal"
+          ],
+          "facts_ok": true,
+          "steps": 2,
+          "tool_errors": 0,
+          "invalid_citations_removed": 0
+        },
+        {
+          "id": "a12",
+          "tool_ok": true,
+          "called": [
+            "predict_liver_risk"
+          ],
+          "facts_ok": true,
+          "steps": 2,
+          "tool_errors": 0,
+          "invalid_citations_removed": 0
+        },
+        {
+          "id": "a13",
+          "tool_ok": true,
+          "called": [
+            "search_guidelines"
+          ],
+          "facts_ok": true,
+          "steps": 2,
+          "tool_errors": 0,
+          "invalid_citations_removed": 0
+        },
+        {
+          "id": "a14",
+          "tool_ok": true,
+          "called": [
+            "search_guidelines"
+          ],
+          "facts_ok": true,
+          "steps": 2,
+          "tool_errors": 0,
+          "invalid_citations_removed": 0
+        },
+        {
+          "id": "a15",
+          "tool_ok": true,
+          "called": [
+            "search_guidelines"
+          ],
+          "facts_ok": true,
+          "steps": 2,
+          "tool_errors": 0,
+          "invalid_citations_removed": 0
+        }
+      ],
+      "_meta": {
+        "ran_at": "2026-10-21T13:02:10+00:00",
+        "seconds": 105.9,
+        "provider": "ollama",
+        "chat_model": "qwen2.5:7b",
+        "limit": null
+      }
+    },
+    "nutrition": {
+      "dataset": "Nutrition5k cafe1 metadata (Thames et al., CVPR 2021)",
+      "n_dishes": 40,
+      "n_ingredients": 102,
+      "ingredient_kcal_mae": {
+        "deterministic_top1": 70.6,
+        "llm_rerank": 27.9
+      },
+      "dish_true_grams": {
+        "deterministic_top1": {
+          "mae_kcal": 174.6,
+          "median_ape_pct": 33.5,
+          "within_20pct": 45.0,
+          "n": 40
+        },
+        "llm_rerank": {
+          "mae_kcal": 66.7,
+          "median_ape_pct": 14.2,
+          "within_20pct": 60.0,
+          "n": 40
+        }
+      },
+      "dish_llm_estimated_portions": {
+        "mae_kcal": 101.7,
+        "median_ape_pct": 56.2,
+        "within_20pct": 22.5,
+        "n": 40
+      },
+      "naive_baseline_predict_mean": {
+        "mae_kcal": 137.3,
+        "median_ape_pct": 60.9,
+        "within_20pct": 12.5,
+        "n": 40
+      },
+      "_meta": {
+        "ran_at": "2026-10-21T12:59:27+00:00",
+        "seconds": 480.8,
+        "provider": "ollama",
+        "chat_model": "qwen2.5:7b",
+        "limit": null
+      }
+    }
+  }
+}

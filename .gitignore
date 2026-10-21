@@ -1,63 +1,44 @@
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
-*.egg
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
 
-# Virtual Environment
+# Virtual environments
+.venv/
 venv/
 env/
 ENV/
-.venv
 
-# Streamlit
-.streamlit/secrets.toml
-.streamlit/config.toml
-
-# API Keys and Credentials
-*.json
-*.pem
+# Secrets - never commit
 .env
-.env.local
+.env.*
+!.env.example
+.streamlit/secrets.toml
+*.pem
+*service-account*.json
+*firebase-adminsdk*.json
+*credentials*.json
 secrets/
-credentials/
 
-# IDE
+# Downloaded datasets (re-created by `liverbuddy download`)
+data/
+
+# Built artifacts (re-created by `liverbuddy build-index`); trained models are small and committed
+artifacts/*
+!artifacts/models/
+artifacts/models/*.tmp
+evals/results/raw/
+
+# Legacy prototype leftovers
+fatty-liver-disease-solution/
+
+# IDE / OS
 .vscode/
 .idea/
-*.swp
-*.swo
-*~
-
-# OS
 .DS_Store
 Thumbs.db
-
-# Logs
 *.log
-
-# Database
-*.db
-*.sqlite
-
-# Temporary files
-*.tmp
-temp/
-
-.streamlit/secrets.toml

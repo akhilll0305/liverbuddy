@@ -1,0 +1,42 @@
+{"id": "q01", "question": "How much weight do I need to lose to reduce liver fat?", "gold_chunks": ["easl2024-0031", "aasld2023-0054"], "key_facts": [["5%", "3%", "3–5%", "3-5%"]]}
+{"id": "q02", "question": "How much weight loss is needed to improve liver fibrosis?", "gold_chunks": ["easl2024-0031", "aasld2023-0054"], "key_facts": [["10%"]]}
+{"id": "q03", "question": "Is drinking coffee good for fatty liver disease?", "gold_chunks": ["aasld2023-0057"], "key_facts": [["coffee"], ["3 or more", "three", "3 cups"]]}
+{"id": "q04", "question": "How much exercise per week is recommended for people with MASLD?", "gold_chunks": ["easl2024-0033", "aasld2023-0058"], "key_facts": [["150"]]}
+{"id": "q05", "question": "Are statins safe for people with fatty liver?", "gold_chunks": ["aasld2023-0019", "aasld2023-0088", "easl2024-0044"], "key_facts": [["safe"]]}
+{"id": "q06", "question": "What FIB-4 value means advanced fibrosis is unlikely?", "gold_chunks": ["aasld2023-0038", "aasld2023-0045", "easl2024-0013", "easl2024-0017"], "key_facts": [["1.3"]]}
+{"id": "q07", "question": "What is the first test recommended to check for liver fibrosis in MASLD?", "gold_chunks": ["easl2024-0013", "aasld2023-0091", "aasld2023-0038"], "key_facts": [["FIB-4", "fibrosis-4"]]}
+{"id": "q08", "question": "What is the second step after FIB-4 if fibrosis is still suspected?", "gold_chunks": ["easl2024-0013", "aasld2023-0039"], "key_facts": [["elastography", "VCTE", "FibroScan", "stiffness"]]}
+{"id": "q09", "question": "Should everyone in the general population be screened for fatty liver disease?", "gold_chunks": ["aasld2023-0091", "aasld2023-0082", "aasld2023-0037"], "key_facts": [["not"]]}
+{"id": "q10", "question": "Who should be screened for advanced liver fibrosis?", "gold_chunks": ["aasld2023-0091", "aasld2023-0082", "aasld2023-0076"], "key_facts": [["diabetes", "T2DM"]]}
+{"id": "q11", "question": "Is an ultrasound good enough to detect fatty liver?", "gold_chunks": ["aasld2023-0043", "aasld2023-0092", "aasld2023-0083"], "key_facts": [["sensitiv"]]}
+{"id": "q12", "question": "Does metformin treat fatty liver disease?", "gold_chunks": ["aasld2023-0068"], "key_facts": [["not", "no"]]}
+{"id": "q13", "question": "Does vitamin E help with NASH?", "gold_chunks": ["aasld2023-0064", "aasld2023-0084"], "key_facts": [["histolog", "improv"]]}
+{"id": "q14", "question": "Can pioglitazone be used for MASH?", "gold_chunks": ["aasld2023-0065", "easl2024-0038", "aasld2023-0084"], "key_facts": [["pioglitazone"]]}
+{"id": "q15", "question": "What is resmetirom used for in liver disease?", "gold_chunks": ["easl2024-0036", "easl2024-0037"], "key_facts": [["fibrosis"], ["MASH", "steatohepatitis"]]}
+{"id": "q16", "question": "Are GLP-1 drugs like semaglutide recommended to treat MASH?", "gold_chunks": ["easl2024-0038", "aasld2023-0066"], "key_facts": [["GLP", "semaglutide"]]}
+{"id": "q17", "question": "Does milk thistle (silymarin) help fatty liver?", "gold_chunks": ["aasld2023-0069"], "key_facts": [["inconclusive", "not improve", "did not"]]}
+{"id": "q18", "question": "Should people with fatty liver drink alcohol?", "gold_chunks": ["aasld2023-0089", "easl2024-0009", "aasld2023-0025"], "key_facts": [["alcohol"], ["abstain", "avoid", "stop", "discourag"]]}
+{"id": "q19", "question": "What diet is recommended for fatty liver disease?", "gold_chunks": ["easl2024-0032", "aasld2023-0056", "aasld2023-0093", "aasld2023-0083"], "key_facts": [["Mediterranean"]]}
+{"id": "q20", "question": "Should I avoid sugary drinks if I have MASLD?", "gold_chunks": ["easl2024-0032", "aasld2023-0056"], "key_facts": [["sugar"]]}
+{"id": "q21", "question": "Can bariatric surgery help fatty liver disease?", "gold_chunks": ["easl2024-0041", "aasld2023-0061", "aasld2023-0094", "aasld2023-0060"], "key_facts": [["bariatric"]]}
+{"id": "q22", "question": "Can you get fatty liver disease if you are not overweight?", "gold_chunks": ["aasld2023-0034", "aasld2023-0036", "easl2024-0034"], "key_facts": [["lean", "not overweight", "nonoverweight", "normal weight", "normal-weight"]]}
+{"id": "q23", "question": "What is the BMI threshold for lean NAFLD in Asian people?", "gold_chunks": ["aasld2023-0034"], "key_facts": [["23"]]}
+{"id": "q24", "question": "What is the definition of MASLD?", "gold_chunks": ["easl2024-0001", "easl2024-0004"], "key_facts": [["cardiometabolic"]]}
+{"id": "q25", "question": "What replaced the term NAFLD?", "gold_chunks": ["easl2024-0001", "easl2024-0004", "aasld2023-0002"], "key_facts": [["MASLD", "metabolic dysfunction"]]}
+{"id": "q26", "question": "Is type 2 diabetes a risk factor for fatty liver progression?", "gold_chunks": ["aasld2023-0014", "aasld2023-0015"], "key_facts": [["diabetes", "T2DM"]]}
+{"id": "q27", "question": "What ALT level should be considered abnormal?", "gold_chunks": ["aasld2023-0083"], "key_facts": [["30"]]}
+{"id": "q28", "question": "Do people with MASLD without cirrhosis need liver cancer surveillance?", "gold_chunks": ["easl2024-0024", "easl2024-0025"], "key_facts": [["not recommended", "not indicated", "no"]]}
+{"id": "q29", "question": "Should people with fatty liver who are overweight be checked for sleep apnea?", "gold_chunks": ["aasld2023-0021"], "key_facts": [["sleep apnea", "OSA"]]}
+{"id": "q30", "question": "How are very high triglycerides managed in someone with fatty liver?", "gold_chunks": ["aasld2023-0020"], "key_facts": [["fibrate"]]}
+{"id": "q31", "question": "Can metformin be used if I have cirrhosis?", "gold_chunks": ["easl2024-0044"], "key_facts": [["compensated"]]}
+{"id": "q32", "question": "What is the most common cause of death in people with fatty liver disease?", "gold_chunks": ["aasld2023-0007", "aasld2023-0086"], "key_facts": [["cardiovascular", "CVD"]]}
+{"id": "o01", "question": "Who won the 2022 football world cup?", "in_scope": false}
+{"id": "o02", "question": "What is the capital of Australia?", "in_scope": false}
+{"id": "o03", "question": "How do I treat a sprained ankle?", "in_scope": false}
+{"id": "o04", "question": "What is the best laptop for programming?", "in_scope": false}
+{"id": "o05", "question": "How do I fix a flat bicycle tyre?", "in_scope": false}
+{"id": "o06", "question": "What causes migraines and how are they treated?", "in_scope": false}
+{"id": "o07", "question": "Write me a poem about the ocean.", "in_scope": false}
+{"id": "o08", "question": "What is the treatment for hepatitis C genotype 3?", "in_scope": false}
+{"id": "o09", "question": "How long should I boil an egg?", "in_scope": false}
+{"id": "o10", "question": "What is the dosage of amoxicillin for a child with an ear infection?", "in_scope": false}

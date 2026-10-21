@@ -1,0 +1,10 @@
+{
+  "elastography_participants": 10409,
+  "after_complete_exam": 9023,
+  "after_adults_only": 7768,
+  "after_cap_lsm_present": 7767,
+  "after_viral_hepatitis_excluded": 7512,
+  "after_significant_alcohol_excluded": 7094,
+  "final_cohort": 7094,
+  "fibrosis_cohort_reliable_lsm": 7094
+}

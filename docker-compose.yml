@@ -1,0 +1,48 @@
+# Full local stack: Ollama + API + UI.
+#   docker compose --profile setup run --rm setup   # once: download data, pull models, build indexes
+#   docker compose up -d                            # then open http://localhost:8501
+services:
+  ollama:
+    image: ollama/ollama:latest
+    volumes: [ollama:/root/.ollama]
+    ports: ["11434:11434"]
+    # Uncomment for NVIDIA GPUs (needs the NVIDIA container toolkit):
+    # deploy: {resources: {reservations: {devices: [{driver: nvidia, count: all, capabilities: [gpu]}]}}}
+
+  setup:
+    build: .
+    profiles: [setup]
+    depends_on: [ollama]
+    env_file: [{path: .env, required: false}]
+    environment:
+      LB_OLLAMA_URL: http://ollama:11434
+    volumes: [data:/app/data, index:/app/artifacts/index]
+    command: ["sh", "-c", "liverbuddy pull-models && liverbuddy download && liverbuddy build-index"]
+
+  api:
+    build: .
+    depends_on: [ollama]
+    env_file: [{path: .env, required: false}]
+    environment:
+      LB_OLLAMA_URL: http://ollama:11434
+      LB_DATABASE_URL: sqlite:////app/artifacts/db/liverbuddy.db
+    volumes: [data:/app/data, index:/app/artifacts/index, db:/app/artifacts/db]
+    ports: ["8000:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      retries: 5
+
+  ui:
+    build: .
+    depends_on: [api]
+    environment:
+      LB_API_URL: http://api:8000
+    ports: ["8501:8501"]
+    command: ["streamlit", "run", "app/streamlit_app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+
+volumes:
+  ollama: {}
+  data: {}
+  index: {}
+  db: {}
