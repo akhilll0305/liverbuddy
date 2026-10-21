@@ -70,3 +70,12 @@ def test_save_load_roundtrip(index, tmp_path):
     loaded = HybridIndex.load(tmp_path, "t")
     assert [c.id for c in loaded.chunks] == [c.id for c in CHUNKS]
     assert loaded.search("statins", FakeLLM(), k=1)[0].chunk.id == "g-0"
+
+
+def test_normalize_citations_handles_grouped_markers():
+    from liverbuddy.rag.qa import normalize_citations, strip_citations
+
+    text, nums = normalize_citations("Coffee helps [1, 2] and weight loss works [2; 3].")
+    assert text == "Coffee helps [1][2] and weight loss works [2][3]."
+    assert nums == [1, 2, 3]
+    assert strip_citations("Fact [9].", {9}) == "Fact."

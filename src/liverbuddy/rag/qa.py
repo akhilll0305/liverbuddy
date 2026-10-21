@@ -60,6 +60,27 @@ ABSTAIN_TEXT = ("I couldn't find this in the clinical guidelines I have (AASLD 2
                 "NIH LiverTox), so I won't guess. Please ask your doctor.")
 
 
+_CITE_GROUP = re.compile(r"\[(\s*\d+(?:\s*[,;]\s*\d+)*\s*)\]")
+
+
+def normalize_citations(text: str) -> tuple[str, list[int]]:
+    """Rewrite "[1, 2]" as "[1][2]" and return the cited numbers in order of first use."""
+    seen: list[int] = []
+
+    def repl(m: re.Match) -> str:
+        nums = [int(x) for x in re.split(r"\s*[,;]\s*", m.group(1).strip())]
+        seen.extend(n for n in nums if n not in seen)
+        return "".join(f"[{n}]" for n in nums)
+
+    return _CITE_GROUP.sub(repl, text), seen
+
+
+def strip_citations(text: str, numbers: set[int]) -> str:
+    for n in numbers:
+        text = text.replace(f"[{n}]", "")
+    return re.sub(r"\s+([.,;])", r"\1", text)
+
+
 def format_passages(hits: list[Hit]) -> str:
     return "\n\n".join(f'<source id="{i}" title="{h.chunk.doc_title}" section="{h.chunk.section}">\n'
                        f"{h.chunk.text}\n</source>" for i, h in enumerate(hits, 1))
@@ -84,7 +105,9 @@ def answer_question(question: str, llm: LLM, indexes: list[HybridIndex], k: int 
         return GroundedAnswer(answer=ABSTAIN_TEXT, citations=[], abstained=True, reason="invalid_model_output",
                               **base)
 
-    inline = {int(n) for n in re.findall(r"\[(\d+)\]", out.answer)}
+    text, cited = normalize_citations(out.answer)
+    out.answer = text
+    inline = set(cited)
     valid = sorted(n for n in inline | set(out.cited_sources) if 1 <= n <= len(hits))
     invented = sorted(n for n in inline if not 1 <= n <= len(hits))
     if out.insufficient_evidence or not valid or invented:
