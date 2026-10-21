@@ -61,6 +61,15 @@ def cmd_download(args) -> None:
             z.extractall(fdc)
 
 
+def cmd_pull_models(args) -> None:
+    s = get_settings()
+    for model in dict.fromkeys([s.ollama_chat_model, s.ollama_embed_model] + ([s.ollama_vision_model]
+                                                                               if args.vision else [])):
+        print(f"pulling {model} from {s.ollama_url} ...")
+        r = httpx.post(f"{s.ollama_url}/api/pull", json={"name": model, "stream": False}, timeout=3600)
+        r.raise_for_status()
+
+
 def cmd_build_index(args) -> None:
     from liverbuddy.drugs.livertox import build_drug_table
     from liverbuddy.llm import get_llm
@@ -119,6 +128,9 @@ def main(argv: list[str] | None = None) -> None:
     d = sub.add_parser("download", help="download public datasets (~250 MB)")
     d.add_argument("--force", action="store_true")
     d.set_defaults(fn=cmd_download)
+    pm = sub.add_parser("pull-models", help="pull the configured Ollama models")
+    pm.add_argument("--vision", action="store_true", help="also pull the vision model (~3 GB)")
+    pm.set_defaults(fn=cmd_pull_models)
     sub.add_parser("build-index", help="build drug/food tables and RAG indexes").set_defaults(fn=cmd_build_index)
     sub.add_parser("train", help="train NHANES risk models and write the model card").set_defaults(fn=cmd_train)
     e = sub.add_parser("eval", help="run evaluation suites")
