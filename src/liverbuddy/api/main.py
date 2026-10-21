@@ -131,6 +131,51 @@ def register(body: RegisterIn, db: DB, svc: Svc) -> TokenOut:
     return TokenOut(access_token=create_token(user.id, svc.settings.jwt_secret, svc.settings.jwt_ttl_minutes))
 
 
+@app.post("/auth/demo", response_model=TokenOut, status_code=201)
+def demo_account(db: DB, svc: Svc) -> TokenOut:
+    """Create a throwaway patient with nine months of realistic, improving history (one click for visitors)."""
+    import uuid
+    from datetime import UTC, datetime, timedelta
+
+    today = date.today()
+    user = User(email=f"demo-{uuid.uuid4().hex[:10]}@demo.liverbuddy.dev", password_hash=hash_password(uuid.uuid4().hex),
+                display_name="Arjun (demo)", sex="male", birth_year=today.year - 47, height_cm=172,
+                type2_diabetes=True, on_lipid_lowering=True, alcohol_g_per_week=14)
+    db.add(user)
+    db.flush()
+    history = [
+        (270, {"alt": 82, "ast": 55, "ggt": 104, "platelets": 188, "albumin": 4.3, "triglycerides": 262, "hdl": 35,
+               "fasting_glucose": 138, "hba1c": 7.6}, (98.0, 110.0, 142.0, 90.0)),
+        (160, {"alt": 64, "ast": 46, "ggt": 80, "platelets": 192, "triglycerides": 214, "hdl": 38,
+               "fasting_glucose": 121, "hba1c": 7.0}, (94.0, 106.0, 134.0, 86.0)),
+        (30, {"alt": 46, "ast": 35, "ggt": 57, "platelets": 197, "albumin": 4.4, "triglycerides": 171, "hdl": 41,
+              "fasting_glucose": 108, "hba1c": 6.5}, (89.5, 101.0, 128.0, 82.0)),
+    ]
+    for days_ago, labs, (w, waist, sbp, dbp) in history:
+        when = today - timedelta(days=days_ago)
+        db.add(LabResult(user_id=user.id, taken_on=when, values=labs, source="report"))
+        db.add(Measurement(user_id=user.id, taken_on=when, weight_kg=w, waist_cm=waist, systolic_bp=sbp,
+                           diastolic_bp=dbp))
+    for name, dose in (("Glycomet", "500 mg twice daily"), ("Atorvastatin", "20 mg at night"),
+                       ("Telma", "40 mg daily")):
+        try:
+            rec = svc.livertox.lookup(name).record
+        except ResourceMissing:
+            rec = None
+        db.add(Medication(user_id=user.id, name=name, dose_text=dose, livertox_name=rec.name if rec else None,
+                          likelihood=rec.likelihood if rec else None))
+    now = datetime.now(UTC)
+    for hours_ago, desc, score, kcal in ((4, "2 rotis, dal, cucumber salad", 96, 420),
+                                         (28, "Grilled fish, brown rice, sauteed spinach", 91, 560),
+                                         (52, "Masala dosa with coconut chutney and filter coffee", 66, 610),
+                                         (76, "Chicken biryani and a cola", 31, 1180),
+                                         (100, "Oats with banana and walnuts", 88, 390)):
+        db.add(MealLog(user_id=user.id, eaten_at=now - timedelta(hours=hours_ago), description=desc, score=score,
+                       kcal=kcal, analysis={}))
+    db.commit()
+    return TokenOut(access_token=create_token(user.id, svc.settings.jwt_secret, svc.settings.jwt_ttl_minutes))
+
+
 class LoginIn(BaseModel):
     email: EmailStr
     password: str

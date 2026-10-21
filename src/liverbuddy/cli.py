@@ -109,7 +109,7 @@ def cmd_eval(args) -> None:
 def cmd_serve(args) -> None:
     import uvicorn
 
-    uvicorn.run("liverbuddy.api.main:app", host=args.host, port=args.port, reload=args.reload)
+    uvicorn.run("liverbuddy.api.server:root", host=args.host, port=args.port, reload=args.reload)
 
 
 def cmd_ui(args) -> None:
