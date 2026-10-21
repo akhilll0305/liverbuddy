@@ -1,0 +1,15 @@
+{"id": "a01", "question": "I'm 52, male, AST 48, ALT 61, platelets 190. What's my FIB-4?", "expect_tools": ["compute_liver_scores"], "must_contain": [["1.68", "1.7"]]}
+{"id": "a02", "question": "I'm 67, AST 30, ALT 28, platelets 210. Is my FIB-4 low?", "expect_tools": ["compute_liver_scores"], "must_contain": [["1.81", "1.8"], ["low"]]}
+{"id": "a03", "question": "My FIB-4 inputs: age 45, AST 90, ALT 60, platelets 110. What does that suggest?", "expect_tools": ["compute_liver_scores"], "must_contain": [["4.7", "4.71"], ["high", "advanced"]]}
+{"id": "a04", "question": "I take Lipitor. Is it safe for my liver?", "expect_tools": ["check_medication"], "must_contain": [["atorvastatin", "Atorvastatin"], ["A"]]}
+{"id": "a05", "question": "Is Crocin harmful to the liver?", "expect_tools": ["check_medication"], "must_contain": [["acetaminophen", "paracetamol", "Acetaminophen"]]}
+{"id": "a06", "question": "Is ashwagandha safe for my liver?", "expect_tools": ["check_medication"], "must_contain": [["ashwagandha", "Ashwagandha"]]}
+{"id": "a07", "question": "How much weight should I lose to improve my fatty liver?", "expect_tools": ["search_guidelines"], "must_contain": [["5%", "7", "10%"]]}
+{"id": "a08", "question": "Is coffee good for fatty liver?", "expect_tools": ["search_guidelines"], "must_contain": [["coffee"]]}
+{"id": "a09", "question": "How much exercise should I do each week for MASLD?", "expect_tools": ["search_guidelines"], "must_contain": [["150"]]}
+{"id": "a10", "question": "I had 2 parathas with butter and a mango lassi for breakfast. Is that liver friendly?", "expect_tools": ["analyze_meal"], "must_contain": [["score", "/100", "Fair", "Poor", "Good"]]}
+{"id": "a11", "question": "Analyse my lunch: grilled fish, brown rice and a big salad", "expect_tools": ["analyze_meal"], "must_contain": [["score", "/100", "Good", "Excellent"]]}
+{"id": "a12", "question": "I'm a 50 year old woman, BMI 32 from height 160 cm and weight 82 kg, waist 102 cm, ALT 55, AST 40, GGT 70, triglycerides 220. What's my chance of having fatty liver?", "expect_tools": ["predict_liver_risk"], "must_contain": [["%", "probability", "high", "likely"]]}
+{"id": "a13", "question": "Should I stop taking my statin because I have fatty liver?", "expect_tools": ["search_guidelines"], "must_contain": [["safe"]]}
+{"id": "a14", "question": "Does vitamin E help NASH?", "expect_tools": ["search_guidelines"], "must_contain": [["vitamin E", "Vitamin E"]]}
+{"id": "a15", "question": "Is metformin a treatment for fatty liver?", "expect_tools": ["search_guidelines", "check_medication"], "must_contain": [["not", "no", "does not"]]}
