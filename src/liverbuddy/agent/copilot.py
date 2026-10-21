@@ -15,6 +15,9 @@ from liverbuddy.rag.qa import normalize_citations, strip_citations
 from liverbuddy.safety.guardrails import check_input, check_output
 
 MAX_STEPS = 6
+# tools whose output can ground a factual answer (a profile lookup alone cannot)
+EVIDENCE_TOOLS = {"search_guidelines", "check_medication", "compute_liver_scores", "predict_liver_risk",
+                  "analyze_meal", "get_lab_trend"}
 
 SYSTEM = """You are Liver Buddy, a careful assistant for people managing fatty liver disease (MASLD, formerly \
 NAFLD). You support patients; you never diagnose or prescribe.
@@ -89,7 +92,7 @@ def ask(ctx: ToolContext, question: str, history: list[Message] | None = None) -
         resp = traced_chat(ctx.services.llm, messages, tools=TOOL_SPECS, temperature=0.1, span="copilot")
         if not resp.tool_calls:
             # small models sometimes answer medical questions from memory; insist on grounding once
-            if not traces and not nudged and _needs_grounding(question):
+            if not nudged and _needs_grounding(question) and not any(t.name in EVIDENCE_TOOLS for t in traces):
                 nudged = True
                 messages.append(Message("assistant", resp.content))
                 messages.append(Message("user", "Before answering, call the appropriate tool (for medical facts: "

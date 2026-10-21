@@ -144,7 +144,8 @@ TOOLS: dict[str, tuple[Callable[..., dict], str, dict]] = {
                              "APRI) and MASLD criteria. Saved patient data is used automatically; pass only "
                              "values the user just mentioned.", _schema(MEASURE_FIELDS)),
     "predict_liver_risk": (predict_liver_risk,
-                           "Machine-learning estimate of liver fat ('steatosis') or raised liver stiffness "
+                           "Use for 'what is my chance/risk/probability of fatty liver or fibrosis'. Machine-learning "
+                           "probability of liver fat ('steatosis') or raised liver stiffness "
                            "('fibrosis') with the main drivers.",
                            _schema({"task": "string", **MEASURE_FIELDS}, ["task"],
                                    {"task": "steatosis or fibrosis"})),
