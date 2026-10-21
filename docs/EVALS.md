@@ -76,14 +76,16 @@ Ingredient-level kcal MAE: top-1 70.6, re-ranked 27.9.
 
 ## Copilot agent (tool use)
 
-_Ran 2026-10-21T12:51:26+00:00 · provider `ollama` · chat model `qwen2.5:7b` · 101.6s_
+_Ran 2026-10-21T13:02:10+00:00 · provider `ollama` · chat model `qwen2.5:7b` · 105.9s_
 
 | Metric | Value |
 |---|---|
 | Scenarios | 15 |
-| Correct tool selected | 80.0% |
-| Required facts in answer | 86.7% |
-| Task success (both) | 73.3% |
-| Mean steps | 2.13 |
+| Correct tool selected | 100.0% |
+| Required facts in answer | 93.3% |
+| Task success (both) | 93.3% |
+| Mean steps | 2.2 |
 | Turns where invented citations were caught | 4 |
-| Latency p50 / p95 | 5.31 s / 17.95 s |
+| Latency p50 / p95 | 5.21 s / 16.77 s |
+
+Caveat: these 15 scenarios were also used for failure analysis. The baseline run scored 73.3% task success; the fix it motivated (require an evidence tool before answering) raised it to the figure above. Treat this as a development-set number.

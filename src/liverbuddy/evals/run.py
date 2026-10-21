@@ -399,7 +399,10 @@ def write_markdown(report: dict, path: Path) -> None:
               f"| Required facts in answer | {x['answer_fact_accuracy']}% |",
               f"| Task success (both) | {x['task_success']}% |", f"| Mean steps | {x['mean_steps']} |",
               f"| Turns where invented citations were caught | {x['turns_with_invalid_citations_caught']} |",
-              f"| Latency p50 / p95 | {x['latency_s_p50']} s / {x['latency_s_p95']} s |", ""]
+              f"| Latency p50 / p95 | {x['latency_s_p50']} s / {x['latency_s_p95']} s |", "",
+              "Caveat: these 15 scenarios were also used for failure analysis. The baseline run scored 73.3% task "
+              "success; the fix it motivated (require an evidence tool before answering) raised it to the figure "
+              "above. Treat this as a development-set number.", ""]
     path.write_text("\n".join(L), encoding="utf-8")
 
 

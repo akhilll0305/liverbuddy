@@ -241,14 +241,14 @@
     },
     "agent": {
       "n": 15,
-      "tool_selection_accuracy": 80.0,
-      "answer_fact_accuracy": 86.7,
-      "task_success": 73.3,
-      "mean_steps": 2.13,
+      "tool_selection_accuracy": 100.0,
+      "answer_fact_accuracy": 93.3,
+      "task_success": 93.3,
+      "mean_steps": 2.2,
       "tool_error_rate": 0.0,
       "turns_with_invalid_citations_caught": 4,
-      "latency_s_p50": 5.31,
-      "latency_s_p95": 17.95,
+      "latency_s_p50": 5.21,
+      "latency_s_p95": 16.77,
       "detail": [
         {
           "id": "a01",
@@ -340,12 +340,12 @@
         },
         {
           "id": "a09",
-          "tool_ok": false,
+          "tool_ok": true,
           "called": [
-            "get_my_health_summary"
+            "search_guidelines"
           ],
-          "facts_ok": false,
-          "steps": 2,
+          "facts_ok": true,
+          "steps": 3,
           "tool_errors": 0,
           "invalid_citations_removed": 0
         },
@@ -373,9 +373,9 @@
         },
         {
           "id": "a12",
-          "tool_ok": false,
+          "tool_ok": true,
           "called": [
-            "compute_liver_scores"
+            "predict_liver_risk"
           ],
           "facts_ok": true,
           "steps": 2,
@@ -384,9 +384,9 @@
         },
         {
           "id": "a13",
-          "tool_ok": false,
+          "tool_ok": true,
           "called": [
-            "check_medication"
+            "search_guidelines"
           ],
           "facts_ok": true,
           "steps": 2,
@@ -417,8 +417,8 @@
         }
       ],
       "_meta": {
-        "ran_at": "2026-10-21T12:51:26+00:00",
-        "seconds": 101.6,
+        "ran_at": "2026-10-21T13:02:10+00:00",
+        "seconds": 105.9,
         "provider": "ollama",
         "chat_model": "qwen2.5:7b",
         "limit": null
