@@ -8,7 +8,7 @@ license = { text = "MIT" }
 dependencies = [
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",
-    "pydantic>=2.8",
+    "pydantic[email]>=2.8",
     "pydantic-settings>=2.4",
     "sqlalchemy>=2.0",
     "pyjwt>=2.9",
@@ -17,7 +17,6 @@ dependencies = [
     "pandas>=2.2",
     "scikit-learn>=1.5",
     "xgboost>=2.1",
-    "shap>=0.46",
     "joblib>=1.4",
     "rapidfuzz>=3.9",
     "pypdf>=4.3",
