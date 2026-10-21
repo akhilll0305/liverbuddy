@@ -1,0 +1,47 @@
+"""Curated aliases that LiverTox (a US resource) does not list: INN vs USAN names and common
+non-US brand names, notably Indian ones. Maps alias (lowercase) -> LiverTox chapter title."""
+
+ALIASES: dict[str, str] = {
+    # INN / British names -> US names used by LiverTox
+    "paracetamol": "Acetaminophen",
+    "glibenclamide": "Sulfonylureas, Second Generation",
+    "glyburide": "Sulfonylureas, Second Generation",
+    "gliclazide": "Sulfonylureas, Second Generation",
+    "glimepiride": "Sulfonylureas, Second Generation",
+    "rifampicin": "Rifampin",
+    "ciclosporin": "Cyclosporine",
+    "valproic acid": "Valproate",
+    "sodium valproate": "Valproate",
+    "divalproex": "Valproate",
+    "co-amoxiclav": "Amoxicillin-Clavulanate",
+    "amoxiclav": "Amoxicillin-Clavulanate",
+    # US brands that LiverTox files under "various trade names"
+    "tylenol": "Acetaminophen",
+    "panadol": "Acetaminophen",
+    "calpol": "Acetaminophen",
+    # Common Indian brands
+    "crocin": "Acetaminophen",
+    "dolo": "Acetaminophen",
+    "dolo 650": "Acetaminophen",
+    "glycomet": "Metformin",
+    "atorva": "Atorvastatin",
+    "storvas": "Atorvastatin",
+    "rosuvas": "Rosuvastatin",
+    "telma": "Telmisartan",
+    "amlong": "Amlodipine",
+    "pan 40": "Pantoprazole",
+    "pantocid": "Pantoprazole",
+    "omez": "Omeprazole",
+    "combiflam": "Ibuprofen",
+    "brufen": "Ibuprofen",
+    "voveran": "Diclofenac",
+    "augmentin 625": "Amoxicillin-Clavulanate",
+    "azithral": "Azithromycin",
+    "udiliv": "Ursodiol (Ursodeoxycholic Acid)",
+    "ursocol": "Ursodiol (Ursodeoxycholic Acid)",
+    "ursodeoxycholic acid": "Ursodiol (Ursodeoxycholic Acid)",
+    "levothyroxine": "Thyroid Hormone",
+    "thyronorm": "Thyroid Hormone",
+    "eltroxin": "Thyroid Hormone",
+    "ecosprin": "Aspirin",
+}
