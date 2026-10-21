@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  push:
+    branches: [main, v2-rebuild]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: uv pip install --system -e ".[ui,dev]"
+      - name: Lint
+        run: ruff check src app tests
+      - name: Unit tests
+        run: pytest -q
+      - name: Deterministic evals (safety guardrails, model metrics)
+        run: liverbuddy eval safety ml
+      - name: Fail if held-out escalation recall regresses
+        run: |
+          python - <<'EOF'
+          import json, sys
+          s = json.load(open("evals/results/latest.json"))["suites"]["safety"]
+          print("held-out accuracy", s["heldout_accuracy"], "escalation recall", s["heldout_escalation_recall"])
+          sys.exit(0 if s["heldout_escalation_recall"] >= 100 and s["escalation_recall"] >= 100 else 1)
+          EOF
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t liverbuddy:ci .
+      - name: Smoke test
+        run: |
+          docker run -d --name lb -p 8000:8000 -e LB_LLM_PROVIDER=fake liverbuddy:ci
+          for i in $(seq 1 30); do curl -sf localhost:8000/health && break; sleep 1; done
+          curl -sf -X POST localhost:8000/scores -H 'content-type: application/json' \
+            -d '{"age":50,"ast":40,"alt":36,"platelets":200}' | grep -q '"FIB-4"'
