@@ -26,6 +26,16 @@ Model-dependent results use a local Qwen2.5-7B and nomic-embed-text on a laptop 
 | **Safety guardrails** | **90.9%** on a blind held-out set (first run), 100% after fixing both misses. Escalation recall is gated at 100% in CI |
 | **Copilot agent** (15 scenarios) | **93.3%** task success, up from 73.3% after an eval-driven fix (development-set number) |
 
+## Screenshots
+
+| Dashboard | Copilot with tool calls |
+|---|---|
+| ![Dashboard](docs/screenshots/dashboard.webp) | ![Chat](docs/screenshots/chat-answer.webp) |
+| **Scores & ML risk with TreeSHAP** | **Meal analysis (USDA-grounded)** |
+| ![Scores](docs/screenshots/check.webp) | ![Meals](docs/screenshots/meals-result.webp) |
+| **Medicine check (NIH LiverTox)** | **Landing page** |
+| ![Medicines](docs/screenshots/meds.webp) | ![Landing](docs/screenshots/landing.webp) |
+
 ## What it does
 
 | Feature | How it works | Grounded in |
@@ -43,7 +53,7 @@ Model-dependent results use a local Qwen2.5-7B and nomic-embed-text on a laptop 
 
 ```mermaid
 flowchart LR
-    UI[Streamlit UI] -->|JWT| API[FastAPI]
+    UI[React web app] -->|JWT, /api| API[FastAPI]
     API --> G{Guardrails}
     G -->|red flag / dose request| FIX[Fixed safe response]
     G --> AG[Agent: tool-calling loop]
@@ -62,13 +72,14 @@ uv venv && uv pip install -e ".[ui,dev]"
 liverbuddy pull-models        # qwen2.5:7b + nomic-embed-text (add --vision for meal photos)
 liverbuddy download           # ~250 MB of public data: NHANES, LiverTox, USDA, guidelines, Nutrition5k metadata
 liverbuddy build-index        # drug + food tables, RAG indexes (about 2 min on a laptop GPU)
-liverbuddy serve              # API on :8000, docs at /docs
-liverbuddy ui                 # UI on :8501
+cd web && npm install && npm run build && cd ..   # build the web UI once
+liverbuddy serve              # app on http://localhost:8000 (API docs at /api/docs)
 ```
 
-Optional: `liverbuddy train` retrains the risk models (trained models are committed), `liverbuddy eval`
+Click **Explore the live demo** to load a demo patient with nine months of history. For UI development with hot
+reload, run `liverbuddy ui` (Vite on :5173, proxied to the API). Optional: `liverbuddy train` retrains the risk models (trained models are committed), `liverbuddy eval`
 reruns the evaluation suites, and `pytest` runs the tests. With Docker: `docker compose --profile setup run --rm setup`
-then `docker compose up`. A synthetic lab report for trying the upload is in
+then `docker compose up` and open http://localhost:8000. A synthetic lab report for trying the upload is in
 `tests/fixtures/sample_lab_report.pdf`.
 
 ## Engineering notes
@@ -102,7 +113,7 @@ src/liverbuddy/
   llm/          Ollama, Gemini, fake providers; structured output
   api/          FastAPI app
   evals/        evaluation harness
-app/            Streamlit UI
+web/            React + TypeScript UI (Vite, Tailwind, Framer Motion, Recharts)
 evals/datasets/ gold sets: guideline QA, safety (regression + held-out), agent scenarios
 docs/           MODEL_CARD.md, EVALS.md, ARCHITECTURE.md
 legacy/         original 2025 hackathon prototype, kept for reference
