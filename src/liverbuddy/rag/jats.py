@@ -51,6 +51,15 @@ def _table_text(el: ET.Element) -> str:
     return "\n".join(p for p in parts if p)
 
 
+def _structured_text(el: ET.Element) -> str:
+    """Lists and boxes: one line per item/paragraph so recommendations stay separable."""
+    items = [element_text(li) for li in el.iter() if _local(li.tag) == "list-item"]
+    if not items:
+        items = [element_text(p) for p in el.iter() if _local(p.tag) in ("p", "title")]
+    lines = [i for i in items if i]
+    return "\n".join(lines) if lines else element_text(el)
+
+
 def _blocks(sec: ET.Element, path: list[str], sec_id: str) -> Iterator[Block]:
     for child in sec:
         tag = _local(child.tag)
@@ -62,7 +71,7 @@ def _blocks(sec: ET.Element, path: list[str], sec_id: str) -> Iterator[Block]:
             yield from _blocks(child, path + [title] if title else path, child.get("id") or sec_id)
         elif tag in BLOCK_TAGS:
             kind = {"table-wrap": "table", "list": "list", "boxed-text": "box"}.get(tag, "paragraph")
-            text = _table_text(child) if kind == "table" else element_text(child)
+            text = _table_text(child) if kind == "table" else _structured_text(child)
             if len(text) > 40:
                 yield Block(path, sec_id, text, kind)
 
@@ -91,7 +100,7 @@ def parse_article(xml_text: str) -> tuple[str, list[Block]]:
             label = element_text(el.find("label")) if el.find("label") is not None else "Table"
             kind = "table"
         else:
-            text = element_text(el)
+            text = _structured_text(el)
             label = element_text(el.find(".//title")) if el.find(".//title") is not None else "Box"
             kind = "box"
         if len(text) > 40:
