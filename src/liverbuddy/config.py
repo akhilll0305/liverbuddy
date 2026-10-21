@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     artifacts_dir: Path = ROOT / "artifacts"
     database_url: str = f"sqlite:///{(ROOT / 'artifacts' / 'liverbuddy.db').as_posix()}"
 
-    jwt_secret: str = "dev-only-change-me"
+    jwt_secret: str = "dev-only-insecure-secret-change-me-in-production"
     jwt_ttl_minutes: int = 60 * 12
 
     api_url: str = "http://localhost:8000"
