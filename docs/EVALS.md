@@ -31,3 +31,59 @@ _Ran 2026-10-21T12:44:54+00:00 · provider `ollama` · chat model `qwen2.5:7b` �
 
 - 909 queries. Top-1 accuracy by query type: {'generic': 100.0, 'typo': 99.7, 'brand': 98.5, 'alias': 100.0}
 - False matches on 10 non-drug queries: **0.0%**
+
+## Retrieval ablation (guidelines, gold-passage hit rate)
+
+_Ran 2026-10-21T12:45:48+00:00 · provider `ollama` · chat model `qwen2.5:7b` · 6.0s_
+
+| Method | hit@1 | hit@3 | hit@6 | MRR |
+|---|---|---|---|---|
+| dense | 56.2% | 84.4% | 87.5% | 0.716 |
+| bm25 | 62.5% | 84.4% | 90.6% | 0.751 |
+| hybrid | 71.9% | 93.8% | 96.9% | 0.823 |
+
+## Grounded answers
+
+_Ran 2026-10-21T12:49:44+00:00 · provider `ollama` · chat model `qwen2.5:7b` · 236.7s_
+
+| Metric | Value |
+|---|---|
+| In-scope questions answered | 93.8% of 32 |
+| Key facts correct (all questions) | 93.8% |
+| Key facts correct (when answered) | 100.0% |
+| Retrieved a gold passage | 93.8% |
+| Answer cites a gold passage | 90.0% |
+| Citation precision (cited passages that are gold) | 70.7% |
+| Sentences carrying a citation | 55.0% |
+| Out-of-scope questions abstained | 90.0% of 10 |
+| Invented citations shown to users | 0 (blocked in code) |
+| Median latency | 6.03 s |
+
+## Nutrition grounding (Nutrition5k)
+
+_Ran 2026-10-21T12:59:27+00:00 · provider `ollama` · chat model `qwen2.5:7b` · 480.8s_
+
+40 dishes, 102 ingredients. Ground truth: Nutrition5k lab-weighed portions and calories.
+
+| Setting | Dish kcal MAE | Median abs % error | Within 20% |
+|---|---|---|---|
+| True grams, top-1 USDA match | 174.6 | 33.5% | 45.0% |
+| True grams, LLM re-ranked match | 66.7 | 14.2% | 60.0% |
+| LLM-estimated portions (names only) | 101.7 | 56.2% | 22.5% |
+| Naive baseline (predict mean) | 137.3 | 60.9% | 12.5% |
+
+Ingredient-level kcal MAE: top-1 70.6, re-ranked 27.9.
+
+## Copilot agent (tool use)
+
+_Ran 2026-10-21T12:51:26+00:00 · provider `ollama` · chat model `qwen2.5:7b` · 101.6s_
+
+| Metric | Value |
+|---|---|
+| Scenarios | 15 |
+| Correct tool selected | 80.0% |
+| Required facts in answer | 86.7% |
+| Task success (both) | 73.3% |
+| Mean steps | 2.13 |
+| Turns where invented citations were caught | 4 |
+| Latency p50 / p95 | 5.31 s / 17.95 s |
