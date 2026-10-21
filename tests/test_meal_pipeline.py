@@ -53,3 +53,26 @@ def test_without_rerank_uses_top_candidate(matcher):
     a = analyze_meal(FakeLLM(responder), matcher, text="banana and cola", use_rerank=False)
     assert all(it.usda_match is not None for it in a.items)
     assert not np.isnan(a.totals.kcal)
+
+
+def test_unmatched_dish_is_decomposed_into_ingredients(matcher):
+    calls = {"n": 0}
+
+    def responder(msgs, tools, schema):
+        props = (schema or {}).get("properties", {})
+        user = msgs[-1].content
+        if "items" in props and "no single entry" in user:
+            return ChatResponse(content=json.dumps({"items": [
+                {"name": "rice", "usda_query": "Rice, white, cooked", "grams": 250, "food_group": "refined_grain"}]}))
+        if "items" in props:
+            return ChatResponse(content=json.dumps({"items": [
+                {"name": "biryani", "usda_query": "Biryani", "grams": 300, "food_group": "other", "cooking": "fried"}]}))
+        calls["n"] += 1
+        # first rerank: biryani -> none; second: rice -> option 1
+        return ChatResponse(content=json.dumps({"choices": [0] if calls["n"] == 1 else [1]}))
+
+    a = analyze_meal(FakeLLM(responder), matcher, text="chicken biryani")
+    assert [i.name for i in a.items] == ["rice"]
+    assert a.items[0].cooking == "fried"  # inherited from the dish
+    assert a.totals.kcal == pytest.approx(130 * 2.5)
+    assert a.unmatched == []

@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+  body {
+    @apply font-sans text-slate-200 antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight text-white;
+  }
+  ::selection {
+    background: rgba(52, 224, 176, 0.3);
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply rounded-2xl border border-white/[0.07] bg-white/[0.035] shadow-card backdrop-blur-xl;
+  }
+  .glass-hover {
+    @apply transition duration-300 hover:-translate-y-0.5 hover:border-brand-400/25 hover:bg-white/[0.05];
+  }
+  .text-gradient {
+    @apply bg-gradient-to-r from-brand-300 via-brand-400 to-sky2-400 bg-clip-text text-transparent;
+  }
+  .label {
+    @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400;
+  }
+  .input {
+    @apply w-full rounded-xl border border-white/10 bg-ink-900/70 px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500
+      outline-none transition focus:border-brand-400/60 focus:ring-4 focus:ring-brand-400/10;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-slate-300;
+  }
+  .skeleton {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.03) 75%);
+    background-size: 200% 100%;
+    @apply animate-shimmer rounded-lg;
+  }
+}
+
+/* Soft film grain so large dark gradients don't band */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* Rotating conic border for the primary call-to-action */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.spin-border {
+  --angle: 0deg;
+  background:
+    linear-gradient(#0a0f1c, #0a0f1c) padding-box,
+    conic-gradient(from var(--angle), transparent 0 60%, #6ff2c8 75%, #2fb2f5 85%, transparent 100%) border-box;
+  border: 1px solid transparent;
+  animation: spin-angle 4s linear infinite;
+}
+@keyframes spin-angle {
+  to {
+    --angle: 360deg;
+  }
+}
+
+.markdown p { @apply mb-3 leading-relaxed last:mb-0; }
+.markdown ul { @apply mb-3 list-disc space-y-1 pl-5; }
+.markdown ol { @apply mb-3 list-decimal space-y-1 pl-5; }
+.markdown strong { @apply font-semibold text-white; }
+.markdown a { @apply text-brand-300 underline decoration-brand-300/40 underline-offset-2; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

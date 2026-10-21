@@ -106,14 +106,52 @@ def match_items(items: list[ExtractedItem], matcher: FoodMatcher, llm: LLM,
     return [c[0] if c else None for c in candidates]
 
 
+DECOMPOSE_PROMPT = """This dish has no single entry in the USDA database: {name} (~{grams:.0f} g).
+List its main ingredients as separate items whose grams add up to about {grams:.0f} g, using plain USDA-style
+names (for example "Rice, white, cooked", "Chicken, thigh, cooked", "Oil, vegetable", "Onions, raw")."""
+
+
+def _decompose_unmatched(llm: LLM, matcher: FoodMatcher, items: list[ExtractedItem], matches: list[FoodMatch | None],
+                         use_rerank: bool) -> tuple[list[ExtractedItem], list[FoodMatch | None]]:
+    """Mixed dishes the extractor kept whole (biryani, curries) get split into ingredients instead of
+    silently contributing zero calories."""
+    out_items: list[ExtractedItem] = []
+    out_matches: list[FoodMatch | None] = []
+    for it, m in zip(items, matches, strict=True):
+        if m is not None:
+            out_items.append(it)
+            out_matches.append(m)
+            continue
+        try:
+            parts = structured(llm, [Message("system", EXTRACT_SYSTEM),
+                                     Message("user", DECOMPOSE_PROMPT.format(name=it.name, grams=it.grams))],
+                               ExtractedMeal, span="meal_decompose").items
+        except Exception:
+            parts = []
+        if not parts:
+            out_items.append(it)
+            out_matches.append(None)
+            continue
+        # the dish was fried/processed once: carry those flags on its main component only
+        main = max(parts, key=lambda p: p.grams)
+        if main.cooking == "unknown":
+            main.cooking = it.cooking
+        main.ultra_processed = main.ultra_processed or it.ultra_processed
+        out_items += parts
+        out_matches += match_items(parts, matcher, llm, use_rerank)
+    return out_items, out_matches
+
+
 def analyze_meal(llm: LLM, matcher: FoodMatcher, text: str | None = None, image: bytes | None = None,
                  portion_hint: str | None = None, use_rerank: bool = True) -> MealAnalysis:
     meal = extract_items(llm, text, image, portion_hint)
     matches = match_items(meal.items, matcher, llm, use_rerank)
+    if any(m is None for m in matches):
+        meal.items, matches = _decompose_unmatched(llm, matcher, meal.items, matches, use_rerank)
     analyzed, unmatched = [], []
     for it, m in zip(meal.items, matches, strict=True):
         nut = m.per_100g.scaled(it.grams) if m else Nutrients()
-        if m is None:
+        if m is None and it.grams >= 15:  # a pinch of spices is not worth a warning
             unmatched.append(it.name)
         analyzed.append(AnalyzedItem(name=it.name, grams=it.grams, food_group=it.food_group, cooking=it.cooking,
                                      ultra_processed=it.ultra_processed, usda_match=m, nutrients=nut))

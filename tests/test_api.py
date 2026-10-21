@@ -99,3 +99,22 @@ def test_labs_extract_from_text(client):
     body = r.json()
     assert body["extraction"]["values"]["platelets"]["value"] == 210
     assert body["panel"]["scores"][0]["missing_inputs"] == ["age"]
+
+
+def test_demo_account_has_history(client):
+    tok = client.post("/auth/demo").json()["access_token"]
+    h = {"Authorization": f"Bearer {tok}"}
+    labs = client.get("/me/labs", headers=h).json()
+    assert len(labs) == 3 and labs[0]["alt"] > labs[-1]["alt"]
+    assert len(client.get("/me/meals", headers=h).json()) == 5
+    assert client.get("/me/summary", headers=h).json()["panel"]["scores"][0]["value"] is not None
+
+
+def test_root_server_mounts_api_under_prefix():
+    from fastapi.testclient import TestClient
+
+    from liverbuddy.api.server import root
+
+    with TestClient(root) as c:
+        assert c.post("/api/scores", json={"age": 50, "ast": 40, "alt": 36, "platelets": 200}).status_code == 200
+        assert c.get("/some/client/route").status_code in (200, 404)

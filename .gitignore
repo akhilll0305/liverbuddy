@@ -36,6 +36,14 @@ evals/results/raw/
 # Legacy prototype leftovers
 fatty-liver-disease-solution/
 
+# Web UI
+web/node_modules/
+web/dist/
+
+# Local agent/tool state
+.agents/
+.claude/
+
 # IDE / OS
 .vscode/
 .idea/

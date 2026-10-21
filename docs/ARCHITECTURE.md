@@ -6,7 +6,7 @@ tested, reproduced and cited.
 
 ```mermaid
 flowchart LR
-    U[Patient / Streamlit UI] -->|HTTPS + JWT| API[FastAPI]
+    U[Patient / React web app] -->|HTTPS + JWT, /api| API[FastAPI]
     API --> G{Guardrails<br/>rules, pre-LLM}
     G -->|emergency / crisis / dose request| FIX[Fixed safe response]
     G -->|allow| AG[Copilot agent<br/>tool-calling loop]
@@ -41,6 +41,7 @@ flowchart LR
 | `safety/guardrails.py` | Input routing and output filtering | Clause-scoped negation; crisis > emergency > urgent > dosing priority; output filter strips personal dosing instructions |
 | `agent/` | Tool-calling copilot | 7 JSON-schema tools; at most 6 steps; a grounding nudge if the model answers from memory; citation numbering shared across the turn |
 | `llm/` | Provider abstraction | Ollama (offline, default), Gemini, and a scripted fake for tests; structured output with validation-error repair loop |
+| `web/` | React + TypeScript single-page app | Thin typed client over `/api`; Framer Motion animations; Recharts trends; served by FastAPI in production (single port), Vite proxy in development |
 | `observability.py` | Tracing | Per-request spans (LLM, tool, retrieval) with latency and tokens; PII redaction helper; `/metrics/llm` p50/p95 |
 | `evals/` | Evaluation harness | Deterministic suites gate CI; model suites record which model produced each number |
 
