@@ -1,0 +1,16 @@
+.git
+.venv
+env
+data
+artifacts/index
+artifacts/*.db
+artifacts/traces.jsonl
+web/node_modules
+web/dist
+legacy
+**/__pycache__
+.streamlit
+.env
+.agents
+.claude
+fatty-liver-disease-solution

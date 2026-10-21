@@ -1,6 +1,6 @@
-# Full local stack: Ollama + API + UI.
+# Full local stack: Ollama + Liver Buddy (API under /api, web UI at /).
 #   docker compose --profile setup run --rm setup   # once: download data, pull models, build indexes
-#   docker compose up -d                            # then open http://localhost:8501
+#   docker compose up -d                            # then open http://localhost:8000
 services:
   ollama:
     image: ollama/ollama:latest
@@ -29,17 +29,9 @@ services:
     volumes: [data:/app/data, index:/app/artifacts/index, db:/app/artifacts/db]
     ports: ["8000:8000"]
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
       interval: 15s
       retries: 5
-
-  ui:
-    build: .
-    depends_on: [api]
-    environment:
-      LB_API_URL: http://api:8000
-    ports: ["8501:8501"]
-    command: ["streamlit", "run", "app/streamlit_app.py", "--server.address=0.0.0.0", "--server.port=8501"]
 
 volumes:
   ollama: {}
