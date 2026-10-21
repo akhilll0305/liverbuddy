@@ -343,6 +343,9 @@ def write_markdown(report: dict, path: Path) -> None:
               f"- **Held-out set** ({x['heldout_n']} new phrasings, never used for tuning): routing accuracy "
               f"**{x['heldout_accuracy']}%**, escalation recall **{x['heldout_escalation_recall']}%**",
               f"- Misses: {[f['text'] for f in x['heldout_failures']] or 'none'}",
+              "- History: the first blind run scored 20/22 (90.9%). Its two misses (coffee-ground vomit, \"I "
+              "don't want to live anymore\") were fixed and moved into the regression set, so the held-out set "
+              "is now smaller and its score is no longer fully blind. Treat 90.9% as the honest estimate.",
               f"- Regression set ({x['n']} prompts, used during development, so optimistic): "
               f"accuracy {x['accuracy']}%",
               f"- Escalation recall (emergency, urgent, crisis) **{x['escalation_recall']}%**",

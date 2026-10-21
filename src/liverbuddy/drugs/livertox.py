@@ -127,6 +127,11 @@ class LiverTox:
         if not hits:
             return DrugLookup(query=query, matched=False, match_score=0, record=None, category_meaning=None,
                               note="No LiverTox entry found.")
+        # very short names ("BAL", "INH") only count on an exact match, or "football" -> "BAL"
+        hits = [h for h in hits if len(h[0]) >= 5 or h[0] == q] or hits[:0]
+        if not hits:
+            return DrugLookup(query=query, matched=False, match_score=0, record=None, category_meaning=None,
+                              note="No LiverTox entry found.")
         best_name, score, idx = hits[0]
         rec = self.records[self._owner[idx]]
         alts = list(dict.fromkeys(self.records[self._owner[i]].name for _, _, i in hits[1:]

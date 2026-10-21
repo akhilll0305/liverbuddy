@@ -30,7 +30,9 @@ DOSING_MSG = (
 
 # (pattern, label). Patterns are matched on lowercase text.
 EMERGENCY = [
-    (r"(vomit\w*|throw\w* up|puk\w*)\W+(\w+\W+){0,3}blood|blood\W+(\w+\W+){0,3}(vomit|throw)", "vomiting blood"),
+    (r"(vomit\w*|throw\w* up|threw up|puk\w*)\W+(\w+\W+){0,6}(blood|coffee[- ]grounds?)"
+     r"|blood\W+(\w+\W+){0,3}(vomit|throw)|coffee[- ]grounds?\W+(\w+\W+){0,3}(vomit|throw|threw)",
+     "vomiting blood"),
     (r"(black|tarry|maroon)\W+(\w+\W+){0,2}(stools?|poo|poop)|(stools?|poo|poop)\W+(\w+\W+){0,3}(black|tarry|maroon)"
      r"|blood\W+(in|with)\W+(my\W+)?(stools?|poo)",
      "black or bloody stool"),
@@ -47,15 +49,20 @@ URGENT = [
     (r"\b(swollen|swelling|bloated|distended)\W+(\w+\W+){0,2}(belly|abdomen|stomach|tummy|legs?|ankles?)\b"
      r"|\b(belly|abdomen|stomach|tummy|legs?|ankles?)\W+(\w+\W+){0,2}(swollen|swelling|distended)\b",
      "abdominal or leg swelling"),
-    (r"\bdark (urine|pee)\b|\bpale (stool|poo)\b", "dark urine or pale stool"),
-    (r"\b(fever|temperature)\b.*\b(liver|cirrhosis)\b", "fever with liver disease"),
+    (r"\bdark (urine|pee)\b|\bpale (stool|poo)\b|\b(urine|pee)\W+(\w+\W+){0,3}(dark|brown|cola|tea[- ]colou?red)\b",
+     "dark urine or pale stool"),
+    (r"\b(fever|temperature)\b.*\b(liver|cirrhosis)\b|\bcirrhosis\b.*\b(fever|temperature)\b",
+     "fever with liver disease"),
 ]
 CRISIS = [
-    (r"\b(kill myself|suicid\w*|end my life|want to die|self[- ]harm|hurt myself)\b", "self-harm"),
+    (r"\b(kill(ing)? myself|suicid\w*|end(ing)? my life|want to die|self[- ]harm\w*|hurt(ing)? myself"
+     r"|(don'?t|do not) want to (live|be alive|wake up)|better off dead|no reason to live)\b",
+     "self-harm"),
 ]
 # Dose amounts and dose changes: always declined.
 DOSING = [
     r"\bhow (much|many)\b.{0,40}\b(should|can|do) i (take|use|have)\b",
+    r"\bhow (much|many)\b.{0,30}\bto (take|inject|use)\b",
     r"\b(increase|decrease|double|halve|reduce|change|adjust)\b.{0,15}\b(my )?(dose|dosage)\b",
     r"\bwhat (dose|dosage)\b.{0,30}\b(should|can) i\b",
 ]
