@@ -113,7 +113,16 @@ def cmd_serve(args) -> None:
 
 
 def cmd_ui(args) -> None:
-    subprocess.run([sys.executable, "-m", "streamlit", "run", str(ROOT / "app" / "streamlit_app.py")], check=False)
+    """Run the React dev server (hot reload) on :5173; it proxies /api to `liverbuddy serve`."""
+    import shutil
+
+    web = ROOT / "web"
+    npm = shutil.which("npm") or shutil.which("npm.cmd")
+    if npm is None:
+        sys.exit("npm not found. Install Node.js 20+, or run `liverbuddy serve` to use the prebuilt UI.")
+    if not (web / "node_modules").exists():
+        subprocess.run([npm, "install"], cwd=web, check=True)
+    subprocess.run([npm, "run", "dev"], cwd=web, check=False)
 
 
 def cmd_traces(args) -> None:
@@ -142,7 +151,7 @@ def main(argv: list[str] | None = None) -> None:
     sv.add_argument("--port", type=int, default=8000)
     sv.add_argument("--reload", action="store_true")
     sv.set_defaults(fn=cmd_serve)
-    sub.add_parser("ui", help="run the Streamlit app").set_defaults(fn=cmd_ui)
+    sub.add_parser("ui", help="run the web UI dev server (hot reload)").set_defaults(fn=cmd_ui)
     sub.add_parser("traces", help="summarise LLM/tool latency and tokens").set_defaults(fn=cmd_traces)
     args = p.parse_args(argv)
     args.fn(args)
