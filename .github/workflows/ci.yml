@@ -58,8 +58,11 @@ jobs:
         run: docker build -t liverbuddy:ci .
       - name: Smoke test
         run: |
+          trap 'docker logs lb | tail -40' EXIT
           docker run -d --name lb -p 8000:8000 -e LB_LLM_PROVIDER=fake liverbuddy:ci
           for i in $(seq 1 30); do curl -sf localhost:8000/api/health && break; sleep 1; done
+          curl -sf localhost:8000/api/health | python3 -c "import json,sys; r=json.load(sys.stdin)['resources']; assert r['risk_models'], r"
           curl -sf localhost:8000/ | grep -q '<div id="root">'
+          curl -sf -X POST localhost:8000/api/risk -H 'content-type: application/json'             -d '{"measures":{"age":50,"sex":"male","height_cm":170,"weight_kg":90,"alt":60,"ast":40},"task":"steatosis"}' | grep -q probability
           curl -sf -X POST localhost:8000/api/scores -H 'content-type: application/json' \
             -d '{"age":50,"ast":40,"alt":36,"platelets":200}' | grep -q '"FIB-4"'

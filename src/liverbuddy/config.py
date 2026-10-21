@@ -1,12 +1,25 @@
 """Runtime configuration, loaded from environment variables or a `.env` file."""
 
+import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-ROOT = Path(__file__).resolve().parents[2]
+
+def _project_root() -> Path:
+    """Repo root for a source checkout; otherwise LB_ROOT or the working directory (e.g. /app in Docker,
+    where the package lives in site-packages and __file__ says nothing about where data and models are)."""
+    if env := os.environ.get("LB_ROOT"):
+        return Path(env).resolve()
+    src_root = Path(__file__).resolve().parents[2]
+    if (src_root / "pyproject.toml").exists():
+        return src_root
+    return Path.cwd().resolve()
+
+
+ROOT = _project_root()
 
 
 class Settings(BaseSettings):

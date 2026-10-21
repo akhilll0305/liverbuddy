@@ -9,7 +9,7 @@ RUN npm run build
 # --- Python API serving /api and the built UI at / ---
 FROM python:3.12-slim
 
-ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_SYSTEM_PYTHON=1
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_SYSTEM_PYTHON=1 LB_ROOT=/app
 RUN pip install --no-cache-dir uv==0.9.18
 
 WORKDIR /app
