@@ -11,7 +11,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-Action = Literal["allow", "emergency", "urgent", "crisis", "refuse_dosing"]
+Action = Literal["allow", "caution_medication", "emergency", "urgent", "crisis", "refuse_dosing"]
 
 EMERGENCY_MSG = (
     "This could be a medical emergency. Please call your local emergency number now (112 in India and "
@@ -53,13 +53,19 @@ URGENT = [
 CRISIS = [
     (r"\b(kill myself|suicid\w*|end my life|want to die|self[- ]harm|hurt myself)\b", "self-harm"),
 ]
+# Dose amounts and dose changes: always declined.
 DOSING = [
     r"\bhow (much|many)\b.{0,40}\b(should|can|do) i (take|use|have)\b",
-    r"\b(can|should) i\b.{0,20}\b(stop|quit|skip|discontinue|come off)\b.{0,30}\b(taking|my|the)\b",
     r"\b(increase|decrease|double|halve|reduce|change|adjust)\b.{0,15}\b(my )?(dose|dosage)\b",
     r"\bwhat (dose|dosage)\b.{0,30}\b(should|can) i\b",
+]
+# Start/stop questions: answered from evidence, with a fixed "talk to your prescriber" notice.
+MED_CHANGE = [
+    r"\b(can|should) i\b.{0,20}\b(stop|quit|skip|discontinue|come off|start)\b.{0,30}\b(taking|my|the|a|an)\b",
     r"\b(start|stop) taking\b",
 ]
+MED_CHANGE_NOTICE = ("Please don't start or stop a prescribed medicine without talking to your prescriber. "
+                     "Here is what the evidence says, to help that conversation:")
 NEGATION = re.compile(r"\b(no|not|don'?t|doesn'?t|didn'?t|never|without|denies|haven'?t|isn'?t)\b")
 CLAUSE_BREAK = re.compile(r"[.;!?]|\bbut\b|\bhowever\b|\band now\b")
 
@@ -96,7 +102,10 @@ def check_input(text: str) -> GuardrailResult:
     if hits := _hits(t, URGENT):
         return GuardrailResult(action="urgent", message=URGENT_MSG, matched=hits)
     if any(re.search(p, t) for p in DOSING):
-        return GuardrailResult(action="refuse_dosing", message=DOSING_MSG, matched=["medication change request"])
+        return GuardrailResult(action="refuse_dosing", message=DOSING_MSG, matched=["dose request"])
+    if any(re.search(p, t) for p in MED_CHANGE):
+        return GuardrailResult(action="caution_medication", message=MED_CHANGE_NOTICE,
+                               matched=["medication start/stop question"])
     return GuardrailResult(action="allow")
 
 
