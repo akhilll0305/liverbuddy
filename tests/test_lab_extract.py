@@ -68,3 +68,14 @@ def test_llm_fills_gaps_but_implausible_values_are_rejected():
     assert out.values["alt"].method == "rule"
     assert out.values["ggt"].method == "llm" and out.values["ggt"].value == 55
     assert "platelets" in out.missing
+
+
+def test_pdf_report_end_to_end():
+    from pathlib import Path
+
+    from liverbuddy.labs.extract import pdf_to_text
+
+    pdf = Path(__file__).parent / "fixtures" / "sample_lab_report.pdf"
+    out = extract_labs(pdf_to_text(pdf.read_bytes()))
+    assert out.missing == []
+    assert out.values["platelets"].value == 210 and out.values["albumin"].value == 4.3
