@@ -16,6 +16,7 @@ dependencies = [
     "numpy>=1.26",
     "pandas>=2.2",
     "scikit-learn>=1.5",
+    "scipy>=1.13",
     "xgboost>=2.1",
     "joblib>=1.4",
     "rapidfuzz>=3.9",
