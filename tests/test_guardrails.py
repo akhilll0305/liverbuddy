@@ -51,3 +51,17 @@ def test_output_without_dosing_is_untouched():
 
 def test_negation_does_not_cross_clause_boundaries():
     assert check_input("I don't have jaundice but my stool is black and tarry").action == "emergency"
+
+
+@pytest.mark.parametrize("text,action", [
+    ("Not sure if this is serious, I'm vomiting blood", "emergency"),
+    ("I don't know what's happening, I have chest pain", "emergency"),
+    ("No idea why, my eyes have turned yellow", "urgent"),
+    ("I'm not sure why but I feel confused", "emergency"),
+])
+def test_hedges_and_comma_clauses_do_not_negate_red_flags(text, action):
+    assert check_input(text).action == action
+
+
+def test_negation_still_applies_within_its_own_clause():
+    assert check_input("I don't have chest pain, it's more of an ache in my side").action == "allow"

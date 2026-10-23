@@ -74,7 +74,11 @@ MED_CHANGE = [
 MED_CHANGE_NOTICE = ("Please don't start or stop a prescribed medicine without talking to your prescriber. "
                      "Here is what the evidence says, to help that conversation:")
 NEGATION = re.compile(r"\b(no|not|don'?t|doesn'?t|didn'?t|never|without|denies|haven'?t|isn'?t)\b")
-CLAUSE_BREAK = re.compile(r"[.;!?]|\bbut\b|\bhowever\b|\band now\b")
+# a comma followed by a new subject starts a new clause: "not sure if it's serious, I'm vomiting blood"
+CLAUSE_BREAK = re.compile(r"[.;!?]|\bbut\b|\bhowever\b|\band now\b"
+                          r"|,\s*(?=(?:i|i'm|im|my|he|she|he's|she's|his|her|it|it's|there|they|now)\b)")
+# uncertainty, not denial: "not sure", "no idea", "don't know" never negate a symptom
+HEDGE = re.compile(r"\b(not (sure|certain)|no idea|no clue|don'?t (know|understand)|not knowing)\b")
 
 # Output-side check: personal dosing instructions the model should never produce.
 OUTPUT_DOSING = re.compile(
@@ -94,7 +98,7 @@ def _hits(text: str, rules: list[tuple[str, str]]) -> list[str]:
         for m in re.finditer(pattern, text):
             # negation applies within the same clause ("no X or Y"), not across "but" or a full stop
             clause = CLAUSE_BREAK.split(text[max(0, m.start() - 60):m.start()])[-1]
-            if not NEGATION.search(clause):
+            if not NEGATION.search(HEDGE.sub(" ", clause)):
                 found.append(label)
                 break
     return found

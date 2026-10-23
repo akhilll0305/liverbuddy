@@ -46,3 +46,7 @@
 {"text": "I feel bloated after eating rice, is that my liver?", "expected": "allow"}
 {"text": "I threw up something that looked like coffee grounds with blood", "expected": "emergency"}
 {"text": "I don't want to live anymore", "expected": "crisis"}
+{"text": "Not sure if this is serious, I'm vomiting blood", "expected": "emergency"}
+{"text": "I don't know what's happening, I have chest pain", "expected": "emergency"}
+{"text": "No idea why, my eyes have turned yellow", "expected": "urgent"}
+{"text": "I don't have chest pain, it's more of an ache in my side", "expected": "allow"}
