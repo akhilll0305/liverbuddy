@@ -7,7 +7,6 @@ artifacts/*.db
 artifacts/traces.jsonl
 web/node_modules
 web/dist
-legacy
 **/__pycache__
 .streamlit
 .env

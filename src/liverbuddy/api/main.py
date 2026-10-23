@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import logging
+import threading
+import time
+from collections import deque
 from collections.abc import Iterator
 from datetime import date
 from typing import Annotated, Literal
@@ -85,6 +88,43 @@ Me = Annotated[User, Depends(current_user)]
 MaybeMe = Annotated[User | None, Depends(optional_user)]
 
 
+class RateLimiter:
+    """Sliding one-minute window per client, so a public demo cannot exhaust the LLM or fill the database."""
+
+    def __init__(self) -> None:
+        self._hits: dict[str, deque[float]] = {}
+        self._lock = threading.Lock()
+
+    def allow(self, key: str, per_minute: int, now: float | None = None) -> bool:
+        now = time.monotonic() if now is None else now
+        with self._lock:
+            hits = self._hits.setdefault(key, deque())
+            while hits and hits[0] <= now - 60:
+                hits.popleft()
+            if len(hits) >= per_minute:
+                return False
+            hits.append(now)
+            if len(self._hits) > 10_000:  # forget idle clients
+                self._hits = {k: v for k, v in self._hits.items() if v and v[-1] > now - 60}
+            return True
+
+
+_limiter = RateLimiter()
+
+
+def rate_limit(request: Request, svc: Svc) -> None:
+    limit = svc.settings.rate_limit_per_minute
+    if not limit:
+        return
+    forwarded = request.headers.get("x-forwarded-for", "").split(",")[0].strip()
+    client = forwarded or (request.client.host if request.client else "unknown")
+    if not _limiter.allow(client, limit):
+        raise HTTPException(429, "Too many requests. Please wait a minute and try again.")
+
+
+Limited = [Depends(rate_limit)]
+
+
 @app.exception_handler(ResourceMissing)
 async def _missing(_: Request, exc: ResourceMissing):
     return JSONResponse(status_code=503, content={"detail": str(exc)})
@@ -120,7 +160,7 @@ class TokenOut(BaseModel):
     token_type: str = "bearer"
 
 
-@app.post("/auth/register", response_model=TokenOut, status_code=201)
+@app.post("/auth/register", response_model=TokenOut, status_code=201, dependencies=Limited)
 def register(body: RegisterIn, db: DB, svc: Svc) -> TokenOut:
     if db.scalar(select(User).where(User.email == body.email.lower())):
         raise HTTPException(409, "Email already registered")
@@ -131,7 +171,7 @@ def register(body: RegisterIn, db: DB, svc: Svc) -> TokenOut:
     return TokenOut(access_token=create_token(user.id, svc.settings.jwt_secret, svc.settings.jwt_ttl_minutes))
 
 
-@app.post("/auth/demo", response_model=TokenOut, status_code=201)
+@app.post("/auth/demo", response_model=TokenOut, status_code=201, dependencies=Limited)
 def demo_account(db: DB, svc: Svc) -> TokenOut:
     """Create a throwaway patient with nine months of realistic, improving history (one click for visitors)."""
     import uuid
@@ -342,7 +382,7 @@ class AskIn(BaseModel):
     question: str = Field(min_length=3, max_length=1000)
 
 
-@app.post("/guidelines/ask")
+@app.post("/guidelines/ask", dependencies=Limited)
 def guidelines_ask(body: AskIn, svc: Svc) -> dict:
     guard = check_input(body.question)
     if guard.action not in ("allow", "caution_medication"):
@@ -351,7 +391,7 @@ def guidelines_ask(body: AskIn, svc: Svc) -> dict:
     return {"guardrail": guard.model_dump(), "answer": ans.model_dump()}
 
 
-@app.post("/meals/analyze", response_model=MealAnalysis)
+@app.post("/meals/analyze", response_model=MealAnalysis, dependencies=Limited)
 async def meals_analyze(svc: Svc, db: DB, user: MaybeMe, description: Annotated[str | None, Form()] = None,
                         portion: Annotated[str | None, Form()] = None, save: Annotated[bool, Form()] = False,
                         image: Annotated[UploadFile | None, File()] = None) -> MealAnalysis:
@@ -380,7 +420,7 @@ class LabExtractOut(BaseModel):
     panel: ScorePanel | None
 
 
-@app.post("/labs/extract", response_model=LabExtractOut)
+@app.post("/labs/extract", response_model=LabExtractOut, dependencies=Limited)
 async def labs_extract(svc: Svc, db: DB, user: MaybeMe, file: Annotated[UploadFile | None, File()] = None,
                        text: Annotated[str | None, Form()] = None) -> LabExtractOut:
     if file is not None:
@@ -401,7 +441,7 @@ class CopilotIn(BaseModel):
     history: list[dict] = Field(default_factory=list, description="[{role, content}] of previous turns")
 
 
-@app.post("/copilot", response_model=CopilotReply)
+@app.post("/copilot", response_model=CopilotReply, dependencies=Limited)
 def copilot(body: CopilotIn, svc: Svc, db: DB, user: MaybeMe) -> CopilotReply:
     history = [Message(h["role"], h["content"]) for h in body.history[-6:]
                if h.get("role") in ("user", "assistant") and isinstance(h.get("content"), str)]
