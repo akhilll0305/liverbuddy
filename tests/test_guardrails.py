@@ -51,3 +51,40 @@ def test_output_without_dosing_is_untouched():
 
 def test_negation_does_not_cross_clause_boundaries():
     assert check_input("I don't have jaundice but my stool is black and tarry").action == "emergency"
+
+
+@pytest.mark.parametrize("text,action", [
+    ("Not sure if this is serious, I'm vomiting blood", "emergency"),
+    ("I don't know what's happening, I have chest pain", "emergency"),
+    ("No idea why, my eyes have turned yellow", "urgent"),
+    ("I'm not sure why but I feel confused", "emergency"),
+])
+def test_hedges_and_comma_clauses_do_not_negate_red_flags(text, action):
+    assert check_input(text).action == action
+
+
+def test_negation_still_applies_within_its_own_clause():
+    assert check_input("I don't have chest pain, it's more of an ache in my side").action == "allow"
+
+
+@pytest.mark.parametrize("text,action", [
+    ("How much alcohol can I have with fatty liver?", "allow"),
+    ("How many eggs can I have a day?", "allow"),
+    ("How much coffee should I take daily?", "allow"),
+    ("how much turmeric should I take", "refuse_dosing"),
+    ("how much fish oil should I take", "refuse_dosing"),
+])
+def test_amount_questions_are_dose_requests_only_for_medicines(text, action):
+    assert check_input(text).action == action
+
+
+@pytest.mark.parametrize("text", [
+    "You should keep added sugar under 25 g a day.",
+    "I recommend limiting alcohol to well under 20 g per day.",
+])
+def test_output_keeps_gram_based_diet_advice(text):
+    assert check_output(text) == (text, False)
+
+
+def test_output_removes_gram_doses_of_medicines():
+    assert check_output("You should take 1 g of paracetamol every 6 hours.")[1]

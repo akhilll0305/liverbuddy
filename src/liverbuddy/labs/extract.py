@@ -23,7 +23,7 @@ ALIASES: dict[str, list[str]] = {
     "platelets": [r"platelet\s*count", r"\bplatelets?\b", r"\bplt\b"],
     "albumin": [r"\balbumin\b(?!\s*/)(?!.*globulin\s*ratio)"],
     "triglycerides": [r"triglycerides?", r"\btg\b"],
-    "hdl": [r"hdl(\s*-?\s*c(holesterol)?)?\b", r"high\s+density\s+lipoprotein"],
+    "hdl": [r"(?<!non)(?<!non[\s-])hdl(\s*-?\s*c(holesterol)?)?\b", r"high\s+density\s+lipoprotein"],
     "fasting_glucose": [r"fasting\s+(blood\s+|plasma\s+)?(sugar|glucose)", r"glucose,?\s*fasting", r"\bfbs\b",
                         r"\bfpg\b"],
     "hba1c": [r"hb\s*a1c", r"glycated\s+ha?emoglobin", r"glycosylated\s+ha?emoglobin", r"\ba1c\b"],
@@ -36,6 +36,7 @@ UNITS_OUT = {"alt": "U/L", "ast": "U/L", "ggt": "U/L", "platelets": "10^9/L", "a
              "triglycerides": "mg/dL", "hdl": "mg/dL", "fasting_glucose": "mg/dL", "hba1c": "%"}
 
 _NUM = r"(\d{1,3}(?:,\d{2,3})+|\d+(?:\.\d+)?)"  # also Indian lakh grouping: 2,45,000
+_RATIO = re.compile(r"\bratio\b|\b(a|tg|chol\w*|ldl|hdl|sgot|sgpt|ast|alt)\s*/\s*(g|hdl|ldl|sgpt|alt)\b")
 
 
 class LabValue(BaseModel):
@@ -78,7 +79,7 @@ def extract_rules(text: str) -> tuple[dict[str, LabValue], list[str]]:
     warnings: list[str] = []
     for line in text.splitlines():
         low = line.lower()
-        if "ratio" in low and "albumin" in low:  # A/G ratio, not albumin
+        if _RATIO.search(low):  # A/G, TG/HDL, SGOT/SGPT ratios are not the analytes themselves
             continue
         for analyte, pats in ALIASES.items():
             if analyte in found:
