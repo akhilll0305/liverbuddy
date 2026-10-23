@@ -59,10 +59,20 @@ CRISIS = [
      r"|(don'?t|do not) want to (live|be alive|wake up)|better off dead|no reason to live)\b",
      "self-harm"),
 ]
-# Dose amounts and dose changes: always declined.
-DOSING = [
+# "How much X can I have" asks for a dose only when X is a medicine, not a food, drink or activity.
+AMOUNT = [
     r"\bhow (much|many)\b.{0,40}\b(should|can|do) i (take|use|have)\b",
     r"\bhow (much|many)\b.{0,30}\bto (take|inject|use)\b",
+]
+DIET = re.compile(
+    r"\b(alcohol|drinks?|beer|wine|spirits?|coffee|tea|water|juice|soda|cola|sugar|salt|sodium|fibre|fiber|"
+    r"protein|fat|carbs?|carbohydrates?|calories|kcal|food|meals?|diet|eggs?|fruits?|vegetables?|rice|roti|"
+    r"bread|nuts|oil|milk|meat|fish|sweets?|steps|exercise|sleep|weight)\b")
+MEDICINE = re.compile(
+    r"\b(mg|mcg|iu|dose|dosage|tablets?|pills?|capsules?|medicines?|medications?|drugs?|supplements?|"
+    r"vitamins?|insulin|inject\w*|syrup|fish oil|omega[- ]?3)\b")
+# Dose changes: always declined.
+DOSING = [
     r"\b(increase|decrease|double|halve|reduce|change|adjust)\b.{0,15}\b(my )?(dose|dosage)\b",
     r"\bwhat (dose|dosage)\b.{0,30}\b(should|can) i\b",
 ]
@@ -80,10 +90,13 @@ CLAUSE_BREAK = re.compile(r"[.;!?]|\bbut\b|\bhowever\b|\band now\b"
 # uncertainty, not denial: "not sure", "no idea", "don't know" never negate a symptom
 HEDGE = re.compile(r"\b(not (sure|certain)|no idea|no clue|don'?t (know|understand)|not knowing)\b")
 
-# Output-side check: personal dosing instructions the model should never produce.
+# Output-side check: personal dosing instructions the model should never produce. Grams are also how
+# diet advice is given ("keep added sugar under 25 g"), so a gram amount only counts outside diet sentences.
+_ADVICE = r"\b(you should|i recommend|take|increase to|reduce to)\b[^.]{0,40}\b\d+(\.\d+)?\s?"
 OUTPUT_DOSING = re.compile(
-    r"\b(you should|i recommend|take|increase to|reduce to)\b[^.]{0,40}\b\d+(\.\d+)?\s?(mg|mcg|g|iu|tablets?|pills?)\b"
+    _ADVICE + r"(mg|mcg|iu|tablets?|pills?)\b"
     r"|\b(stop|discontinue) (taking )?(your|the) (medicine|medication|tablets?)\b", re.I)
+OUTPUT_DOSING_GRAMS = re.compile(_ADVICE + r"g\b", re.I)
 
 
 class GuardrailResult(BaseModel):
@@ -104,6 +117,16 @@ def _hits(text: str, rules: list[tuple[str, str]]) -> list[str]:
     return found
 
 
+def _is_dose_amount(span: str) -> bool:
+    return bool(MEDICINE.search(span)) or not DIET.search(span)
+
+
+def _gives_dose(sentence: str) -> bool:
+    if OUTPUT_DOSING.search(sentence):
+        return True
+    return bool(OUTPUT_DOSING_GRAMS.search(sentence)) and not DIET.search(sentence.lower())
+
+
 def check_input(text: str) -> GuardrailResult:
     t = " ".join(text.lower().split())
     if hits := _hits(t, CRISIS):
@@ -112,7 +135,8 @@ def check_input(text: str) -> GuardrailResult:
         return GuardrailResult(action="emergency", message=EMERGENCY_MSG, matched=hits)
     if hits := _hits(t, URGENT):
         return GuardrailResult(action="urgent", message=URGENT_MSG, matched=hits)
-    if any(re.search(p, t) for p in DOSING):
+    if any(re.search(p, t) for p in DOSING) or any(_is_dose_amount(m.group()) for p in AMOUNT
+                                                   for m in re.finditer(p, t)):
         return GuardrailResult(action="refuse_dosing", message=DOSING_MSG, matched=["dose request"])
     if any(re.search(p, t) for p in MED_CHANGE):
         return GuardrailResult(action="caution_medication", message=MED_CHANGE_NOTICE,
@@ -123,7 +147,7 @@ def check_input(text: str) -> GuardrailResult:
 def check_output(text: str) -> tuple[str, bool]:
     """Strip sentences containing personal dosing instructions. Returns (text, was_modified)."""
     sentences = re.split(r"(?<=[.!?])\s+", text)
-    kept = [s for s in sentences if not OUTPUT_DOSING.search(s)]
+    kept = [s for s in sentences if not _gives_dose(s)]
     if len(kept) == len(sentences):
         return text, False
     note = "(Dosing details were removed. Please confirm any medication change with your prescriber.)"
