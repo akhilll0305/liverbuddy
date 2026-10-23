@@ -79,3 +79,15 @@ def test_pdf_report_end_to_end():
     out = extract_labs(pdf_to_text(pdf.read_bytes()))
     assert out.missing == []
     assert out.values["platelets"].value == 210 and out.values["albumin"].value == 4.3
+
+
+def test_ratio_and_non_hdl_lines_are_not_read_as_analytes():
+    report = """Non-HDL Cholesterol 160 mg/dL
+LDL/HDL Ratio 2.5
+TG/HDL 3.5
+SGOT/SGPT 1.2
+HDL Cholesterol 42 mg/dL
+Triglycerides 150 mg/dL
+SGOT (AST) 30 U/L"""
+    v = {k: x.value for k, x in extract_rules(report)[0].items()}
+    assert v["hdl"] == 42 and v["triglycerides"] == 150 and v["ast"] == 30
