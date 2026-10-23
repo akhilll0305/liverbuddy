@@ -118,3 +118,20 @@ def test_root_server_mounts_api_under_prefix():
     with TestClient(root) as c:
         assert c.post("/api/scores", json={"age": 50, "ast": 40, "alt": 36, "platelets": 200}).status_code == 200
         assert c.get("/some/client/route").status_code in (200, 404)
+
+
+def test_rate_limiter_window():
+    rl = api.RateLimiter()
+    assert all(rl.allow("ip", 3, now=0) for _ in range(3))
+    assert not rl.allow("ip", 3, now=1)
+    assert rl.allow("other", 3, now=1)
+    assert rl.allow("ip", 3, now=61)
+
+
+def test_llm_endpoints_return_429_over_the_limit(client):
+    svc = api.app.dependency_overrides[api.services]()
+    svc.settings.rate_limit_per_minute = 2
+    api._limiter = api.RateLimiter()
+    codes = [client.post("/auth/demo").status_code for _ in range(3)]
+    assert codes == [201, 201, 429]
+    assert client.post("/scores", json={"age": 50}).status_code == 200  # stateless tools stay unlimited

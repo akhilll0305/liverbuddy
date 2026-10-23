@@ -44,6 +44,8 @@ class Settings(BaseSettings):
     jwt_ttl_minutes: int = 60 * 12
 
     api_url: str = "http://localhost:8000"
+    # requests per minute per client IP for LLM-backed and account-creating endpoints; 0 disables
+    rate_limit_per_minute: int = 0
 
     @property
     def raw_dir(self) -> Path:
