@@ -66,4 +66,5 @@ Exclusions: incomplete elastography, age < 18, viral hepatitis (HCV RNA+ or self
 - Triglycerides and glucose come from non-fasting serum biochemistry.
 - One US cohort only. Calibration in other populations (for example South Asian patients) is unknown and likely to differ.
 - Race and ethnicity are deliberately excluded as features.
+- The fibrosis comparison is not like-for-like. FIB-4, NFS and APRI were designed to detect *advanced* fibrosis (F3-F4), while the label here is LSM >= 8 kPa, a broader rule-out threshold. The model is optimised for this label and the scores are not, so the large delta overstates any clinical advantage. FIB-4 stays the guideline first-line test, and the app always shows it.
 - The basic variant (no blood tests) is intended for people without recent labs. Its accuracy is lower.
