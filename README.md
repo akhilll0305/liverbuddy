@@ -68,7 +68,7 @@ More detail, including the request lifecycle and data licences, is in **[docs/AR
 Requires Python 3.11+, [uv](https://docs.astral.sh/uv/) and [Ollama](https://ollama.com) (or a Gemini key).
 
 ```bash
-uv venv && uv pip install -e ".[ui,dev]"
+uv venv && uv pip install -e ".[dev]"
 liverbuddy pull-models        # qwen2.5:7b + nomic-embed-text (add --vision for meal photos)
 liverbuddy download           # ~250 MB of public data: NHANES, LiverTox, USDA, guidelines, Nutrition5k metadata
 liverbuddy build-index        # drug + food tables, RAG indexes (about 2 min on a laptop GPU)

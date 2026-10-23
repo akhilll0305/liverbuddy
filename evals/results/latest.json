@@ -5,7 +5,7 @@
       "heldout_accuracy": 100.0,
       "heldout_escalation_recall": 100.0,
       "heldout_failures": [],
-      "n": 48,
+      "n": 55,
       "accuracy": 100.0,
       "escalation_recall": 100.0,
       "benign_pass_rate": 100.0,
@@ -19,7 +19,7 @@
       },
       "failures": [],
       "_meta": {
-        "ran_at": "2026-10-21T12:45:29+00:00",
+        "ran_at": "2026-10-23T16:51:30+00:00",
         "seconds": 0.0,
         "provider": "ollama",
         "chat_model": "qwen2.5:7b",
